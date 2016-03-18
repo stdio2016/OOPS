@@ -1,0 +1,56 @@
+class main
+{
+ d i,j;
+ a k,o,p;
+ d m(a x){j=j.m(new d(x));}
+ void n(a x,a y,a z,a w,a q,a r,a s,a t)
+ {m(k);m(y);m(z);m(w);m(q);m(r);m(s);m(t);m(p);}
+ main()
+ {
+  a x=new a,l=new b,y=new e;
+  k=new f;o=new c;p=new g;
+  i=j=new d(x);
+  n(o,o,o,o,l,l,l,l);
+  // gen code before m(y)
+  m(y);
+  // gen code after m(y)
+  n(o,o,l,o,o,o,o,o);
+  n(o,o,l,o,o,o,o,o);
+  n(i);
+  n(.);
+  n(p);
+  n(();
+  n(i);
+  n());
+  n(;);
+  n(\n);
+  n(o,o,l,o,o,o,o,o);
+  n(});
+  n(\n);
+  n(});
+  i.p(i);
+ }
+}
+class a{a p(d x){}a q(){}}
+class b:a
+{
+ a p(d x){putchar(1);}
+ a q(){puts(",l");}
+}
+class c:a
+{
+ a p(d x){putchar(0);}
+ a q(){puts(",o");}
+}
+class d
+{
+ a i;
+ d j;
+ d(a x){i=x;}
+ d m(d x){j=x;}
+ a p(d x){i.p(x);j.p(x);}
+ a q(){i.q();j.q();}
+}
+class e:a{a p(d x){x.q();}a q(){puts("  m(y);\n");}}
+class f:c{a q(){puts("  n(o");}}
+class g:a{a q(){puts(");\n");}
