@@ -7,11 +7,11 @@ OOPS是Object Orient Programming System的簡稱，裡面只有跟物件導向�
 
 * `obj.getchar()` 取得下一個位元
 
-  如果下一個位元是1則傳回obj，否則傳回null
+  如果下一個位元是1則傳回`obj`，否則傳回`null`
 
 * `obj.feof()` 詢問是否到檔案結尾
 
-  如果到檔案結尾則傳回obj，否則傳回null
+  如果到檔案結尾則傳回`obj`，否則傳回`null`
 
 * `putchar('字元')` 輸出一個字元
 
@@ -19,7 +19,7 @@ OOPS是Object Orient Programming System的簡稱，裡面只有跟物件導向�
 
 * `putchar(物件)` 輸出一個位元
 
-  如果物件是null則輸出0，否則輸出1
+  如果物件是`null`則輸出0，否則輸出1
 
 * `puts("字串")` 輸出字串
 
