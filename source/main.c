@@ -93,6 +93,7 @@ int main(int argc,char*argv[])
     struct parseNode *pn;
     pn=getParseTree(&ps);
     showNode(pn,0);
+    listClasses(pn);
     stopParsing(&ps);
     setColor(0x7);
 #ifdef DEBUG
