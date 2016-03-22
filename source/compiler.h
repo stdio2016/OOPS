@@ -19,4 +19,18 @@ void showNode(struct parseNode *pn,int indent);
 
 void freeAll(struct parseNode *pn);
 
+struct arrayType
+{
+    int length;
+    int maxLen;
+    void **data;
+};
+
+struct stringType
+{
+    int length;
+    int maxLen;
+    char *data;
+};
+
 #endif // COMPILER_H_INCLUDED
