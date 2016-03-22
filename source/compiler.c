@@ -697,3 +697,109 @@ void showNode(struct parseNode *pn,int indent)
         pn=pn->next;
     }
 }
+
+void initArray(struct arrayType *arr)
+{
+    arr->length=0;
+    arr->maxLen=4;
+    arr->data=malloc(arr->maxLen * sizeof(void *));
+}
+
+void initString(struct stringType *arr)
+{
+    arr->length=0;
+    arr->maxLen=4;
+    arr->data=malloc(arr->maxLen * sizeof(char));
+}
+
+void addItem(struct arrayType *arr,void *dat)
+{
+    if(arr->length>=arr->maxLen)
+    {
+        arr->maxLen*=2;
+        arr->data=realloc(arr->data,sizeof(void *)* arr->maxLen);
+    }
+    arr->data[arr->length++]=dat;
+}
+
+void addByte(struct stringType *arr,char dat)
+{
+    if(arr->length>=arr->maxLen)
+    {
+        arr->maxLen*=2;
+        arr->data=realloc(arr->data,sizeof(char)* arr->maxLen);
+    }
+    arr->data[arr->length++]=dat;
+}
+
+struct arrayType classes;
+
+struct varType
+{
+    struct classType *type;
+    char *name;
+};
+
+struct classType
+{
+    char *name;
+    int visited;
+    struct classType *base;
+    struct arrayType derives;
+    struct arrayType vars;
+    struct arrayType constructors;
+    struct arrayType methods;
+    struct parseNode *node;
+};
+
+struct methodType
+{
+    char *name;
+    struct classType *retType;
+    struct arrayType args;
+    struct stringType *code;
+    struct parseNode *node;
+};
+
+void listClasses(struct parseNode *root)
+{
+    initArray(&classes);
+    struct parseNode *p=root;
+    while(p!=NULL)
+    {
+        struct classType *ct=malloc(sizeof(struct classType));
+        ct->name=p->dat.n->dat.n->dat.s;
+        ct->node=p->dat.n;
+        ct->base=NULL;
+        ct->visited=0;
+        initArray(&ct->derives);
+        initArray(&ct->vars);
+        initArray(&ct->constructors);
+        initArray(&ct->methods);
+
+        addItem(&classes,ct);
+        p=p->next;
+    }
+    int i;
+    for(i=0;i<classes.length;i++)
+    {
+        struct classType *p=classes.data[i];
+        struct parseNode *q=p->node;
+        while(q!=NULL)
+        {
+            if(q->type==5) // var
+            {
+
+            }
+            else if(q->type==7) // method
+            {
+
+            }
+            else if(q->type==9) // constructor
+            {
+
+            }
+            q=q->next;
+        }
+    }
+}
