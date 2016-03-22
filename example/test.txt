@@ -1,0 +1,83 @@
+class main
+{
+    main(){
+        cout.puts("Hello World");
+        digit d=new digit1(new digit0(
+            new digit0(new digit1(new digit()))));
+        d=d.incr();
+        d.print();
+        d.incr.print();
+    }
+}
+class digit
+{
+    digit incr()
+    {
+        return new digit();
+    }
+    digit next()
+    {
+        return this;
+    }
+    void print()
+    {
+        cout.puts("0");
+    }
+    void print2()
+    {
+    }
+}
+
+class digit0 : digit
+{
+    digit _nex;
+    digit0(digit d)
+    {
+        _nex=d;
+    }
+    digit incr()
+    {
+        return new digit1(_nex);
+    }
+    digit next()
+    {
+        return _nex;
+    }
+    void print()
+    {
+        _nex.print2();
+        cout.puts("0");
+    }
+    void print2()
+    {
+        _nex.print2();
+        cout.puts("0");
+    }
+}
+
+class digit1 : digit
+{
+    digit _nex;
+    digit1(digit d)
+    {
+        _nex=d;
+    }
+    digit incr()
+    {
+        return new digit0(_nex.incr());
+    }
+    digit next()
+    {
+        return _nex;
+    }
+    void print()
+    {
+        _nex.print2();
+        cout.puts("1");
+    }
+    void print2()
+    {
+        _nex.print2();
+        cout.puts("1");
+    }
+}
