@@ -11,7 +11,7 @@ static inline void OutOfMemory() {
 #define BASE_BUCKET_COUNT  8
 #define MAX_BUCKET_COUNT 65536
 
-void MyHash_Init(struct MyHash *self, int (*cmpFn)(const void *, const void *), size_t (*hashFn)(const void *)) {
+void MyHash_init(struct MyHash *self, int (*cmpFn)(const void *, const void *), size_t (*hashFn)(const void *)) {
   self->_nb = BASE_BUCKET_COUNT;
   self->_size = 0;
   self->_cmp = cmpFn;
@@ -20,7 +20,7 @@ void MyHash_Init(struct MyHash *self, int (*cmpFn)(const void *, const void *), 
   if (self->_buckets == NULL) OutOfMemory();
 }
 
-struct HashBucket *MyHash_Get(struct MyHash *self, const void *key) {
+struct HashBucket *MyHash_getBucket(struct MyHash *self, const void *key) {
   size_t hash = self->_hf(key) % self->_nb;
   struct HashBucket *it = self->_buckets[hash];
   while (it != NULL) {
@@ -32,7 +32,13 @@ struct HashBucket *MyHash_Get(struct MyHash *self, const void *key) {
   return NULL;
 }
 
-void *MyHash_Set(struct MyHash *self, void *key, void *value) {
+void *MyHash_get(struct MyHash *table, const void *key) {
+  struct HashBucket *it = MyHash_getBucket(table, key);
+  if (it == NULL) return NULL;
+  return it->value;
+}
+
+void *MyHash_set(struct MyHash *self, void *key, void *value) {
   size_t hash = self->_hf(key) % self->_nb;
   struct HashBucket *it = self->_buckets[hash];
   while (it != NULL) {
@@ -52,12 +58,12 @@ void *MyHash_Set(struct MyHash *self, void *key, void *value) {
   self->_buckets[hash] = new1;
   self->_size++;
   if (self->_size > self->_nb * 2 && self->_nb * 2 < MAX_BUCKET_COUNT) {
-    MyHash_Resize(self, self->_nb * 2);
+    MyHash_resize(self, self->_nb * 2);
   }
   return NULL;
 }
 
-struct HashBucket *MyHash_Delete(struct MyHash *self, const void *key) {
+struct HashBucket *MyHash_delete(struct MyHash *self, const void *key) {
   size_t hash = self->_hf(key) % self->_nb;
   struct HashBucket *it = self->_buckets[hash], *prev = NULL;
   while (it != NULL) {
@@ -78,7 +84,7 @@ struct HashBucket *MyHash_Delete(struct MyHash *self, const void *key) {
   return NULL;
 }
 
-void MyHash_Resize(struct MyHash *self, size_t newSize) {
+void MyHash_resize(struct MyHash *self, size_t newSize) {
   struct HashBucket **bucks = self->_buckets;
   self->_buckets = calloc(newSize, sizeof(struct HashBucket));
   if (self->_buckets == NULL) OutOfMemory();
@@ -97,7 +103,7 @@ void MyHash_Resize(struct MyHash *self, size_t newSize) {
   free(bucks);
 }
 
-void MyHash_Iterate(struct MyHash *self, struct MyHashIterator *iter) {
+void MyHash_iterate(struct MyHash *self, struct MyHashIterator *iter) {
   iter->table = self;
   size_t i;
   for (i = 0; i < self->_nb; i++) {
@@ -112,11 +118,11 @@ void MyHash_Iterate(struct MyHash *self, struct MyHashIterator *iter) {
   }
 }
 
-void MyHash_IterateNext(struct MyHashIterator *iter) {
-  if (iter == NULL) return ; // end of iteration
+void MyHash_next(struct MyHashIterator *iter) {
+  if (iter->it == NULL) return ; // end of iteration
   if (iter->it->next == NULL) {
     struct MyHash *tb = iter->table;
-    size_t nbuckets = tb->_nb, i = iter->bucket;
+    size_t nbuckets = tb->_nb, i = iter->bucket + 1;
     while (i < nbuckets && tb->_buckets[i] == NULL) {
       i++;
     }

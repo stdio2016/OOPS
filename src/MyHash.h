@@ -26,24 +26,28 @@ struct MyHashIterator {
   struct HashBucket *it; // points to current bucket or NULL if at end
 };
 
-void MyHash_Init(struct MyHash *table, int (*cmpFn)(const void *, const void *), size_t (*hashFn)(const void *));
+void MyHash_init(struct MyHash *table, int (*cmpFn)(const void *, const void *), size_t (*hashFn)(const void *));
 
 // returns HashBucket if key exists, NULL if not
-struct HashBucket *MyHash_Get(struct MyHash *table, const void *key);
+struct HashBucket *MyHash_getBucket(struct MyHash *table, const void *key);
+
+// returns NULL if key does not exist
+void *MyHash_get(struct MyHash *table, const void *key);
 
 // return old value if key exists, NULL if not
 // old value is replaced
-void *MyHash_Set(struct MyHash *table, void *key, void *value);
+void *MyHash_set(struct MyHash *table, void *key, void *value);
 
 // returns HashBucket if key exists, NULL if not
-struct HashBucket *MyHash_Delete(struct MyHash *table, const void *key);
+struct HashBucket *MyHash_delete(struct MyHash *table, const void *key);
 
-void MyHash_Resize(struct MyHash *table, size_t newSize);
+void MyHash_resize(struct MyHash *table, size_t newSize);
 
 // stores iterator into iter
 // Don't modify the hash table when iterating
-void MyHash_Iterate(struct MyHash *table, struct MyHashIterator *iter);
+void MyHash_iterate(struct MyHash *table, struct MyHashIterator *iter);
 
-void MyHash_IterateNext(struct MyHashIterator *iter);
+// move to the next entry
+void MyHash_next(struct MyHashIterator *iter);
 
 #endif
