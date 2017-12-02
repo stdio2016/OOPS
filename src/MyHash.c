@@ -138,3 +138,18 @@ void MyHash_next(struct MyHashIterator *iter) {
     iter->it = iter->it->next;
   }
 }
+
+size_t MyHash_strhash(const void *string) {
+  const char *str = string;
+  size_t n = strlen(str), i;
+  size_t hash = 88487;
+  for (i = 0; i < n; i++) {
+    hash = (hash << 5) + hash + (size_t) str[i];
+  }
+  return hash;
+}
+
+int MyHash_strcmp(const void *s1, const void *s2) {
+  const char *str1 = s1, *str2 = s2;
+  return strcmp(s1, s2);
+}

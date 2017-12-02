@@ -43,11 +43,17 @@ struct HashBucket *MyHash_delete(struct MyHash *table, const void *key);
 
 void MyHash_resize(struct MyHash *table, size_t newSize);
 
-// stores iterator into iter
+// stores iterator into iter, and store the pointer to first entry into iter->it
 // Don't modify the hash table when iterating
 void MyHash_iterate(struct MyHash *table, struct MyHashIterator *iter);
 
 // move to the next entry
 void MyHash_next(struct MyHashIterator *iter);
+
+// Default hash function, useful if the key is plain old C string ('\0' terminated)
+size_t MyHash_strhash(const void *string);
+
+// Default compare function, for C string keys
+int MyHash_strcmp(const void *s1, const void *s2);
 
 #endif
