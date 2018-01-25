@@ -1,12 +1,20 @@
 %{
 #include <stdio.h>
-int yyerror(char *message);
+#include <ctype.h>
+#include "errReport.h"
+int yyerror(const char *message);
 int yylex(void);
+char *yytext;
 %}
 
+%union {
+  char *str;
+}
+
 // keywords
-%token CLASS RETURN NEW
-%token IDENTIFIER STRING
+%token CLASS RETURN NEW THIS SUPER
+%token<str> IDENTIFIER STRING
+%token ERROR
 %start program
 %%
 program:
@@ -23,7 +31,7 @@ inherit:
 	| ':' name
 	;
 
-classBody: 
+classBody:
 	/* empty */
 	| classBody classBodyItem
 	;
@@ -31,6 +39,7 @@ classBody:
 classBodyItem:
 	fields
 	| method
+	| constructor
 	;
 
 fields:
@@ -46,13 +55,17 @@ method:
 	type name '(' argumentList ')' block
 	;
 
+constructor:
+	name '(' argumentList ')' block
+	;
+
 argumentList:
 	/* empty */
 	| argumentListNonEmpty
 	;
 
 argumentListNonEmpty:
-	argument 
+	argument
 	| argumentListNonEmpty ',' argument
 	;
 
@@ -73,7 +86,7 @@ statement:
 	varDecls
 	| return
 	| block
-	| stepExpression ';'
+	| expression ';'
 	;
 
 varDecls:
@@ -91,12 +104,7 @@ varDecl:
 	;
 
 return:
-	RETURN stepExpression ';'
-	;
-
-stepExpression:
-	expression
-	| stepExpression ',' expression
+	RETURN expression ';'
 	;
 
 expression:
@@ -121,26 +129,40 @@ callArgs:
 	;
 
 callArgsNonEmpty:
-	expression 
+	expression
 	| callArgsNonEmpty ',' expression
 	;
 
 atom:
 	IDENTIFIER
+	| THIS
+	| SUPER
 	| STRING
-	| '(' stepExpression ')'
+	| '(' expression ')'
 	;
 
 type: IDENTIFIER;
 
 name: IDENTIFIER;
 %%
-int yyerror(char *str)
+int yyerror(const char *str)
 {
-  fprintf(stderr,"error: %s\n",str);
+  if (isprint(yytext[0])) {
+    syntaxError("unmatched token: %s\n", yytext);
+  }
+  else if (yytext[0]) {
+    syntaxError("illegal character: '\\x%x'\n",yytext[0]);
+  }
   return 1;
 }
 
 int main() {
-  return yyparse();
+  int n = yyparse();
+  if (n == 0) {
+    printf("There is no syntax error! :-)\n");
+  }
+  else {
+    printf("There is syntax error ;-(\n");
+  }
+  return n;
 }
