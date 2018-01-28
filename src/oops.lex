@@ -1,4 +1,5 @@
 %{
+#include "ast.h"
 #include "y.tab.h"
 #include "errReport.h"
 int linenum = 1;
@@ -18,7 +19,10 @@ super { return SUPER; }
 
 [(),.:;={}] { return yytext[0]; }
 
-[A-Za-z_$][A-Za-z_$0-9]* { return IDENTIFIER; }
+[A-Za-z_$][A-Za-z_$0-9]* {
+  yylval.str = dupstr(yytext);
+  return IDENTIFIER;
+}
 
 \"(\\.|[^\\"\r\n])*\" { return STRING; }
 \"(\\.|[^\\"\r\n])*({newline}) {
@@ -40,6 +44,6 @@ super { return SUPER; }
   linenum++;
 }
 
-[ \t] ;
+[ \t]+ ;
 . { return ERROR; }
 %%
