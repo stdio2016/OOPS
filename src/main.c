@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include "symtable.h"
+#include "class.h"
 extern FILE* yyin;
 extern int yyparse();
 extern void yylex_destroy();
@@ -15,6 +17,7 @@ int main(int argc, char *argv[]) {
   }
   yyin = f;
 
+  initSymTable();
   int n = yyparse();
   if (n == 0) {
     printf("There is no syntax error! :-)\n");
@@ -22,7 +25,9 @@ int main(int argc, char *argv[]) {
   else {
     printf("There is syntax error ;-(\n");
   }
+
   fclose(f);
   yylex_destroy();
+  destroySymTable();
   return n;
 }

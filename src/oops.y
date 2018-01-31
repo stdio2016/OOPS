@@ -29,7 +29,7 @@ ClassType thisClass;
 
 %destructor { free($$); } <str>
 %destructor { } <cls>
-%destructor { } <argList>
+%destructor { free($$.types); } <argList>
 
 %%
 program:
@@ -97,7 +97,7 @@ argumentListNonEmpty:
 	;
 
 argument:
-	type name { free($2); }
+	type name { addParamVar($1, $2); free($2); }
 	;
 
 block:
@@ -126,8 +126,8 @@ varList:
 	;
 
 varDecl:
-	name { $$ = $1; }
-	| name '=' expression { $$ = $1; }
+	name { addLocalVar(currentType, $1); $$ = $1; }
+	| name '=' expression { addLocalVar(currentType, $1); $$ = $1; }
 	;
 
 return:

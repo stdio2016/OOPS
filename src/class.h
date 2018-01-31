@@ -28,6 +28,8 @@ ClassType getVoidClass();
 ClassType getClass(const char *name);
 ClassType createClass(const char *name, ClassType baseClass);
 
+void showClassSignature(struct ArgType args);
+
 void addField(ClassType cls, ClassType type, const char *name);
 void addMethod(ClassType cls, ClassType returnType, const char *name, struct ArgType arguments);
 void addConstructor(ClassType cls, const char *name, struct ArgType arguments);
