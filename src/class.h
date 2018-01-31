@@ -12,11 +12,6 @@ struct Class {
   struct MyHash fields; // char* name -> struct Field*
 };
 
-struct ArgType {
-  int arity;
-  struct Class **types;
-};
-
 struct Method {
   struct Class *thisClass;
   struct Class *returnType;

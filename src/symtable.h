@@ -4,4 +4,5 @@
 #include "ast.h"
 #include "class.h"
 
+struct ArgType getArgumentList(void);
 #endif

@@ -1,5 +1,6 @@
 TARGET = oops
 OBJECT = lex.yy.o y.tab.o MyHash.o errReport.o ast.o symtable.o main.o class.o
+OBJECT += ArrayList.o
 GENERATED = lex.yy.c y.tab.c y.tab.h
 CC = gcc
 LEX = flex
@@ -25,6 +26,7 @@ ast.o: ast.c ast.h
 symtable.o: symtable.c symtable.h ast.h class.h MyHash.h errReport.h
 main.o: main.c
 class.o: class.c class.h MyHash.h ast.h
+ArrayList.o: ArrayList.c ArrayList.h
 
 .PHONY: clean
 clean:

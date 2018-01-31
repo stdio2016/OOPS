@@ -14,6 +14,7 @@ ClassType thisClass;
 %union {
   char *str;
   ClassType cls;
+  struct ArgType argList;
 }
 
 // keywords
@@ -24,9 +25,11 @@ ClassType thisClass;
 %start program
 %type<str> name varDecl
 %type<cls> inherit type
+%type<argList> argumentList
 
 %destructor { free($$); } <str>
-%destructor { free($$); } <cls>
+%destructor { } <cls>
+%destructor { } <argList>
 
 %%
 program:
@@ -70,8 +73,7 @@ fieldList:
 
 method:
 	type name '(' argumentList ')' {
-	  struct ArgType a;
-	  addMethod(thisClass, $1, $2, a);
+	  addMethod(thisClass, $1, $2, $4);
 	}
 	block { free($2); }
 	;
@@ -79,14 +81,14 @@ method:
 constructor:
 	name '(' argumentList ')' {
 	  struct ArgType a;
-	  addConstructor(thisClass, $1, a);
+	  addConstructor(thisClass, $1, $3);
 	}
 	block { free($1); }
 	;
 
 argumentList:
-	/* empty */
-	| argumentListNonEmpty
+	/* empty */ { $$ = getArgumentList(); }
+	| argumentListNonEmpty { $$ = getArgumentList(); }
 	;
 
 argumentListNonEmpty:
