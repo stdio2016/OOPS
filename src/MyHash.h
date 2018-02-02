@@ -28,6 +28,9 @@ struct MyHashIterator {
 
 void MyHash_init(struct MyHash *table, int (*cmpFn)(const void *, const void *), size_t (*hashFn)(const void *));
 
+// please free(HashBucket) yourself
+void MyHash_destroy(struct MyHash *table, void (*destructor)(struct HashBucket *));
+
 // returns HashBucket if key exists, NULL if not
 struct HashBucket *MyHash_getBucket(struct MyHash *table, const void *key);
 

@@ -2,23 +2,49 @@
 #include <stdlib.h>
 #include "class.h"
 
+struct MyHash allClasses;
+ClassType VoidClass;
+
+void initClassTable() {
+  MyHash_init(&allClasses, MyHash_strcmp, MyHash_strhash);
+  VoidClass = createClass("void", NULL);
+}
+
+void classTableDestructor(struct HashBucket *hb) {
+  destroyClass(hb->value);
+  free(hb);
+}
+
+void destroyClassTable() {
+  MyHash_destroy(&allClasses, classTableDestructor);
+}
+
 ClassType getVoidClass() {
-  ClassType a = malloc(sizeof(struct Class));
-  a->name = dupstr("void");
-  return a;
+  return VoidClass;
 }
 
 ClassType getClass(const char *name) {
-  ClassType a = malloc(sizeof(struct Class));
-  a->name = dupstr(name);
-  return a;
+  ClassType t = MyHash_get(&allClasses, name);
+  if (t != NULL) return t;
+  t = createClass(name, NULL);
+  return t;
 }
 
 ClassType createClass(const char *name, ClassType baseClass) {
-  ClassType a = malloc(sizeof(struct Class));
-  a->name = dupstr(name);
-  printf("class %s\n", name);
-  return a;
+  ClassType t = MyHash_get(&allClasses, name);
+  if (t != NULL) {
+    return t;
+  }
+  t = malloc(sizeof(struct Class));
+  t->name = dupstr(name);
+  t->base = baseClass;
+  MyHash_set(&allClasses, t->name, t);
+  return t;
+}
+
+void destroyClass(ClassType cls) {
+  free(cls->name);
+  free(cls);
 }
 
 void addField(ClassType cls, ClassType type, const char *name) {

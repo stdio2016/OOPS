@@ -7,6 +7,7 @@
 
 struct Class {
   char *name;
+  ClassType base;
   bool defined;
   struct MyHash methods; // char* name -> list of struct Method*
   struct MyHash fields; // char* name -> struct Field*
@@ -30,9 +31,13 @@ struct Field {
   char *name;
 };
 
-ClassType getVoidClass();
+void initClassTable(void);
+void destroyClassTable(void);
+
+ClassType getVoidClass(void);
 ClassType getClass(const char *name);
 ClassType createClass(const char *name, ClassType baseClass);
+void destroyClass(ClassType cls);
 
 void showClassSignature(struct ArgType args);
 

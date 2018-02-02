@@ -20,6 +20,19 @@ void MyHash_init(struct MyHash *self, int (*cmpFn)(const void *, const void *), 
   if (self->_buckets == NULL) OutOfMemory();
 }
 
+void MyHash_destroy(struct MyHash *self, void (*destructor)(struct HashBucket *)) {
+  size_t i;
+  for (i = 0; i < self->_nb; i++) {
+    struct HashBucket *it = self->_buckets[i];
+    while (it != NULL) {
+      struct HashBucket *next = it->next;
+      destructor(it);
+      it = next;
+    }
+  }
+  free(self->_buckets);
+}
+
 struct HashBucket *MyHash_getBucket(struct MyHash *self, const void *key) {
   size_t hash = self->_hf(key) % self->_nb;
   struct HashBucket *it = self->_buckets[hash];

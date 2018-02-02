@@ -18,6 +18,7 @@ int main(int argc, char *argv[]) {
   yyin = f;
 
   initSymTable();
+  initClassTable();
   int n = yyparse();
   if (n == 0) {
     printf("There is no syntax error! :-)\n");
@@ -28,6 +29,7 @@ int main(int argc, char *argv[]) {
 
   fclose(f);
   yylex_destroy();
+  destroyClassTable();
   destroySymTable();
   return n;
 }

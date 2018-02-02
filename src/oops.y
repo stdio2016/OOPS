@@ -42,9 +42,11 @@ program:
 
 class:
 	CLASS name inherit {
+	  printf("class %s\n", $2);
 	  thisClass = createClass($2, $3);
 	}
 	'{' classBody '}' {
+	  printf("end of class %s\n", $2);
 	  free($2);
 	}
 	;
