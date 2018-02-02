@@ -36,6 +36,12 @@ void initSymTable(void) {
 }
 
 void destroySymTable(void) {
+  while (stackTop > 0) {
+    popSymbol();
+  }
+  stackSize = 0;
+  free(symStack);
+  curScopeLevel = 0;
   ArrayList_destroy(&argTypeList);
   free(symTable._buckets);
 }

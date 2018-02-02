@@ -9,8 +9,8 @@ class main {
   }
   main(AA a, void b) {
     AA c = a;
-    { void r; r = b; }
-    void str = "yes";
+    { void r,c; r = b; }
+    void str = "yes",c;
   }
 }
 
