@@ -1,0 +1,19 @@
+class main {
+  main() {
+    good(new AA(), null);
+  }
+  void good(AA a, void b) {
+    AA c = a;
+    { void r; r = b; }
+    void str = "yes";
+  }
+  main(AA a, void b) {
+    AA c = a;
+    { void r; r = b; }
+    void str = "yes";
+  }
+}
+
+class AA {
+
+}

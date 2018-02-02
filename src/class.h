@@ -12,10 +12,16 @@ struct Class {
   struct MyHash fields; // char* name -> struct Field*
 };
 
+enum MethodFlags {
+  Method_METHOD = 0,
+  Method_CONSTRUCTOR = 1
+};
+
 struct Method {
   struct Class *thisClass;
   struct Class *returnType;
   char *name;
+  enum MethodFlags flag;
   struct ArgType args;
 };
 
@@ -33,4 +39,6 @@ void showClassSignature(struct ArgType args);
 void addField(ClassType cls, ClassType type, const char *name);
 void addMethod(ClassType cls, ClassType returnType, const char *name, struct ArgType arguments);
 void addConstructor(ClassType cls, const char *name, struct ArgType arguments);
+
+int showClassName(ClassType type); // returns chars printed
 #endif

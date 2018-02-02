@@ -15,6 +15,7 @@ ClassType thisClass;
   char *str;
   ClassType cls;
   struct ArgType argList;
+  int scope;
 }
 
 // keywords
@@ -26,10 +27,12 @@ ClassType thisClass;
 %type<str> name varDecl
 %type<cls> inherit type
 %type<argList> argumentList
+%type<scope> PushScope
 
 %destructor { free($$); } <str>
 %destructor { } <cls>
 %destructor { free($$.types); } <argList>
+%destructor { showScope(0); popScope(); } <scope>
 
 %%
 program:
@@ -72,18 +75,19 @@ fieldList:
 	;
 
 method:
-	type name '(' argumentList ')' {
-	  addMethod(thisClass, $1, $2, $4);
+	type name '(' PushScope argumentList ')' {
+	  int scope = $4;
+	  addMethod(thisClass, $1, $2, $5);
 	}
-	block { free($2); }
+	methodBody { free($2); }
 	;
 
 constructor:
-	name '(' argumentList ')' {
-	  struct ArgType a;
-	  addConstructor(thisClass, $1, $3);
+	name '(' PushScope argumentList ')' {
+	  int scope = $3;
+	  addConstructor(thisClass, $1, $4);
 	}
-	block { free($1); }
+	methodBody { free($1); }
 	;
 
 argumentList:
@@ -100,9 +104,15 @@ argument:
 	type name { addParamVar($1, $2); free($2); }
 	;
 
-block:
-	'{' statements '}'
+methodBody:
+	'{' statements '}' { showScope(0); popScope(); }
 	;
+
+block:
+	'{' PushScope statements '}' { int s = $2; showScope(0); popScope(); }
+	;
+
+PushScope: { $$ = pushScope(); };
 
 statements:
 	/* empty */
