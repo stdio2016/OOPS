@@ -17,6 +17,7 @@ int main(int argc, char *argv[]) {
   }
   yyin = f;
 
+  // parse OOPS code
   initSymTable();
   initClassTable();
   int n = yyparse();
@@ -29,7 +30,8 @@ int main(int argc, char *argv[]) {
 
   fclose(f);
   yylex_destroy();
-  destroyClassTable();
   destroySymTable();
+
+  destroyClassTable();
   return n;
 }

@@ -77,19 +77,30 @@ fieldList:
 	;
 
 method:
+	methodHead methodBody
+	;
+
+methodHead:
 	type name '(' PushScope argumentList ')' {
 	  int scope = $4;
-	  addMethod(thisClass, $1, $2, $5);
+	  addMethod(Method_METHOD, thisClass, $1, $2, $5);
+	  free($2);
 	}
-	methodBody { free($2); }
 	;
 
 constructor:
+	constructorHead methodBody
+	;
+
+constructorHead:
 	name '(' PushScope argumentList ')' {
 	  int scope = $3;
-	  addConstructor(thisClass, $1, $4);
+	  if (strcmp($1, thisClass->name)) {
+	    semanticError("constructor name and class name differs\n");
+	  }
+	  addMethod(Method_CONSTRUCTOR, thisClass, getVoidClass(), $1, $4);
+	  free($1);
 	}
-	methodBody { free($1); }
 	;
 
 argumentList:

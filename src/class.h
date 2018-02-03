@@ -23,12 +23,14 @@ struct Method {
   struct Class *returnType;
   char *name;
   enum MethodFlags flag;
+  size_t refcount;
   struct ArgType args;
 };
 
 struct Field {
   struct Class *type;
   char *name;
+  size_t refcount;
 };
 
 void initClassTable(void);
@@ -39,11 +41,14 @@ ClassType getClass(const char *name);
 ClassType createClass(const char *name, ClassType baseClass);
 void destroyClass(ClassType cls);
 
-void showClassSignature(struct ArgType args);
+void showSignature(struct ArgType args);
 
 void addField(ClassType cls, ClassType type, const char *name);
-void addMethod(ClassType cls, ClassType returnType, const char *name, struct ArgType arguments);
-void addConstructor(ClassType cls, const char *name, struct ArgType arguments);
+void addMethod(enum MethodFlags flag, ClassType cls, ClassType returnType, const char *name, struct ArgType arguments);
+void showMethodFlag(enum MethodFlags flag);
+
+void destroyMethod(struct Method *method);
+void destroyField(struct Field *field);
 
 int showClassName(ClassType type); // returns chars printed
 #endif

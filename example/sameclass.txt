@@ -1,0 +1,22 @@
+class same {
+  same() {
+
+  }
+  void aa(digit n) {
+
+  }
+}
+class same {
+  same() {
+
+  }
+  void aa(digit n) {
+
+  }
+  different() {
+
+  }
+}
+class digit{
+
+}

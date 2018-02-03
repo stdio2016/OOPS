@@ -14,4 +14,6 @@ typedef struct Class *ClassType;
 
 char *dupstr(const char *str);
 
+void destroyArgType(struct ArgType a);
+
 #endif

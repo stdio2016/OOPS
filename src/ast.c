@@ -8,4 +8,9 @@ char *dupstr(const char *str) {
   char *nstr = malloc(n + 1);
   strcpy(nstr, str);
   return nstr;
+
+}
+
+void destroyArgType(struct ArgType a) {
+  free(a.types);
 }
