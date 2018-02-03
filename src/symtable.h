@@ -42,10 +42,12 @@ void destroyAttribute(struct Attribute *attr);
 void showAttribute(struct Attribute attr);
 
 void addParamVar(ClassType cls, const char *name);
-void addLocalVar(ClassType cls, const char *name);
+// return local var id or -1 means fail
+int addLocalVar(ClassType cls, const char *name);
 
 void showScope(size_t stackstart);
 int pushScope(void);
 void popScope(void);
 
+struct SymTableEntry *getSymEntry(const char *name);
 #endif

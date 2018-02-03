@@ -106,15 +106,21 @@ void destroyExpr(struct Expr *expr) {
 char *OpName[] = {
   "",
   "=", // a = b, requires type annotation
-  "new", // new a(args)
+  "NEW", // new a(args)
   "DOT", // obj.var or obj.method
   "CALL", // f(x)
-  "<literal>", // literal
+  "<literal> ", // literal
   "<this>", // this
   "<super>", // super
-  "<var>", // variable reference or class or method name
-  "<local>" // local variable reference
+  "<var> ", // variable reference or class or method name
+  "<local> " // local variable reference
 };
+
+void showExprType(struct Expr *expr) {
+  if (expr->type != NULL) {
+    printf(": %s", expr->type->name);
+  }
+}
 
 void showExpr(struct Expr *expr, int depth) {
   int i;
@@ -123,16 +129,22 @@ void showExpr(struct Expr *expr, int depth) {
   }
   printf("%s", OpName[expr->op]);
   if (expr->op == Op_VAR) {
-    printf(" %s\n", expr->name);
+    printf("%s", expr->name);
+    showExprType(expr);
+    puts("");
   }
   else if (expr->op == Op_LOCAL) {
-    printf(" %d\n", expr->varId);
+    printf("%d", expr->varId);
+    showExprType(expr);
+    puts("");
   }
   else if (expr->op == Op_LIT) {
     showConst(expr->lit);
+    showExprType(expr);
     puts("");
   }
   else {
+    showExprType(expr);
     puts("");
     struct Expr *p = expr->args;
     while (p != NULL) {

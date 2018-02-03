@@ -16,7 +16,7 @@ struct MyHash symTable; // char* -> SymTableEntry
 struct SymTableEntry **symStack;
 size_t stackSize, stackTop;
 #define INIT_STACK_SIZE 5
-size_t localVarCount;
+int localVarCount;
 
 int curScopeLevel;
 
@@ -145,14 +145,15 @@ void addParamVar(ClassType cls, const char *name) {
   printf("    param %s\n", name);
 }
 
-void addLocalVar(ClassType cls, const char *name) {
+int addLocalVar(ClassType cls, const char *name) {
   bool yes = addSymbol(name, SymbolKind_variable);
   if (yes) {
     symStack[stackTop-1]->type = cls;
     symStack[stackTop-1]->attr.tag = Attribute_LOCALVAR;
-    symStack[stackTop-1]->attr.tmpVarId = localVarCount++;
+    symStack[stackTop-1]->attr.tmpVarId = localVarCount;
+    return localVarCount++;
   }
-  printf("    var %s\n", name);
+  return -1;
 }
 
 void showScope(size_t stackstart) {
@@ -197,4 +198,8 @@ void popScope(void) {
   for (j = stackTop; j > i; j--) {
     popSymbol();
   }
+}
+
+struct SymTableEntry *getSymEntry(const char *name) {
+  return MyHash_get(&symTable, name);
 }

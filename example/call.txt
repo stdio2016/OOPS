@@ -7,3 +7,11 @@ class call {
 
   }
 }
+class call2:call {
+  call2() {
+    super();
+  }
+  void f() {
+    a = this.getchar();
+  }
+}

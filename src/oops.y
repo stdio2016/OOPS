@@ -27,11 +27,11 @@ ClassType thisClass;
 %token ERROR
 
 %start program
-%type<str> name varDecl
+%type<str> name
 %type<cls> inherit type
 %type<argList> argumentList
 %type<scope> PushScope
-%type<expr> expression newExpr callExpr atom nameNode
+%type<expr> expression newExpr callExpr atom nameNode varDecl
 %type<args> callArgs callArgsNonEmpty
 
 %destructor { free($$); } <str>
@@ -149,13 +149,20 @@ varDecls:
 	;
 
 varList:
-	varDecl { free($1); }
-	| varList ',' varDecl { free($3); }
+	varDecl
+	| varList ',' varDecl
 	;
 
 varDecl:
-	name { addLocalVar(currentType, $1); $$ = $1; }
-	| name '=' expression { addLocalVar(currentType, $1); showExpr($3, 3); $$ = $1; }
+	name { addLocalVar(currentType, $1); $$ = NULL; free($1); }
+	| name '=' expression {
+	    int id = addLocalVar(currentType, $1);
+	    struct Expr *var = createLocalVarExpr(id);
+	    var->type = currentType;
+	    $$ = createExpr(Op_ASSIGN, var, $3);
+	    showExpr($$, 2);
+	    free($1);
+	  }
 	;
 
 return:
@@ -214,7 +221,14 @@ type: IDENTIFIER {
 };
 
 nameNode: IDENTIFIER {
-  $$ = createVarExpr($1);
+  struct SymTableEntry *e = getSymEntry($1);
+  if (e == NULL || e->attr.tag != Attribute_LOCALVAR) {
+    $$ = createVarExpr($1);
+  }
+  else {
+    $$ = createLocalVarExpr(e->attr.tmpVarId);
+    $$->type = e->type;
+  }
 };
 
 name: IDENTIFIER;
