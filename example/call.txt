@@ -1,0 +1,9 @@
+class call {
+  void a,b;
+  call() {
+    good(a,b);
+  }
+  good(void c,void d) {
+
+  }
+}

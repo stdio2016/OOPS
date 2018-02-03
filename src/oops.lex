@@ -1,4 +1,5 @@
 %{
+#include <string.h>
 #include "ast.h"
 #include "y.tab.h"
 #include "errReport.h"
@@ -24,7 +25,13 @@ super { return SUPER; }
   return IDENTIFIER;
 }
 
-\"(\\.|[^\\"\r\n])*\" { return STRING; }
+\"(\\.|[^\\"\r\n])*\" {
+  char *str = malloc(yyleng - 1);
+  memcpy(str, yytext+1, yyleng-2);
+  str[yyleng-2] = '\0';
+  yylval.str = str;
+  return STRING;
+}
 \"(\\.|[^\\"\r\n])*({newline}) {
   syntaxError("unterminated string literal\n");
   return ERROR;

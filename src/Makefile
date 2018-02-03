@@ -22,7 +22,7 @@ y.tab.c y.tab.h: oops.y
 
 MyHash.o: MyHash.c MyHash.h
 errReport.o: errReport.c errReport.h
-ast.o: ast.c ast.h
+ast.o: ast.c ast.h class.h MyHash.h
 symtable.o: symtable.c symtable.h ast.h class.h MyHash.h errReport.h ArrayList.h
 main.o: main.c symtable.h class.h MyHash.h ast.h
 class.o: class.c class.h MyHash.h ast.h errReport.h ArrayList.h

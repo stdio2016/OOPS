@@ -17,6 +17,8 @@ ClassType thisClass;
   ClassType cls;
   struct ArgType argList;
   int scope;
+  struct Expr *expr;
+  struct ExprList args;
 }
 
 // keywords
@@ -29,6 +31,8 @@ ClassType thisClass;
 %type<cls> inherit type
 %type<argList> argumentList
 %type<scope> PushScope
+%type<expr> expression newExpr callExpr atom nameNode
+%type<args> callArgs callArgsNonEmpty
 
 %destructor { free($$); } <str>
 %destructor { } <cls>
@@ -137,7 +141,7 @@ statement:
 	varDecls
 	| return
 	| block
-	| expression ';'
+	| expression ';' { showExpr($1, 2); }
 	;
 
 varDecls:
@@ -151,50 +155,66 @@ varList:
 
 varDecl:
 	name { addLocalVar(currentType, $1); $$ = $1; }
-	| name '=' expression { addLocalVar(currentType, $1); $$ = $1; }
+	| name '=' expression { addLocalVar(currentType, $1); showExpr($3, 3); $$ = $1; }
 	;
 
 return:
-	RETURN expression ';'
+	RETURN expression ';' { showExpr($2, 2); }
 	;
 
 expression:
 	newExpr
-	| newExpr '=' expression
+	| newExpr '=' expression { $$ = createExpr(Op_ASSIGN, $1, $3); }
 	;
 
 newExpr:
 	callExpr
-	| NEW newExpr
+	| NEW newExpr { $$ = createExpr(Op_NEW, $2, NULL); }
 	;
 
 callExpr:
 	atom
-	| callExpr '(' callArgs ')'
-	| callExpr '.' name { free($3); }
+	| callExpr '(' callArgs ')' { $$ = createFuncExpr($1, $3.first); }
+	| callExpr '.' nameNode { $$ = createExpr(Op_DOT, $1, $3); }
 	;
 
 callArgs:
-	/* empty */
+	/* empty */ { initExprList(&$$); }
 	| callArgsNonEmpty
 	;
 
 callArgsNonEmpty:
 	expression
+	{
+	  initExprList(&$$);
+	  addToExprList(&$$, $1);
+	}
 	| callArgsNonEmpty ',' expression
+	{
+	  addToExprList(&$1, $3); $$ = $1;
+	}
 	;
 
 atom:
-	IDENTIFIER { free($1); }
-	| THIS
-	| SUPER
-	| STRING
-	| '(' expression ')'
+	nameNode
+	| THIS { $$ = createExpr(Op_THIS, NULL, NULL); }
+	| SUPER { $$ = createExpr(Op_SUPER, NULL, NULL); }
+	| STRING {
+	    struct Constant a;
+	    a.type = Type_STRING;
+	    a.str = $1;
+	    $$ = createLitExpr(a);
+	  }
+	| '(' expression ')' { $$ = $2; }
 	;
 
 type: IDENTIFIER {
   $$ = currentType = getClass($1);
   free($1);
+};
+
+nameNode: IDENTIFIER {
+  $$ = createVarExpr($1);
 };
 
 name: IDENTIFIER;
