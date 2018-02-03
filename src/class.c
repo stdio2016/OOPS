@@ -78,6 +78,17 @@ void destroyClass(ClassType cls) {
 
 void addField(ClassType cls, ClassType type, const char *name) {
   printf("  field %s\n", name);
+  struct Field *f = MyHash_get(&cls->fields, name);
+  if (f == NULL) {
+    f = malloc(sizeof(*f));
+    f->name = dupstr(name);
+    f->type = type;
+    f->refcount = 1;
+    MyHash_set(&cls->fields, f->name, f);
+  }
+  else {
+    semanticError("field " BOLD_TEXT "%s" NORMAL_TEXT " is already defined in class %s\n", name, cls->name);
+  }
 }
 
 void showSignature(struct ArgType args) {

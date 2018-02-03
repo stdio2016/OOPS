@@ -6,6 +6,7 @@ class same {
 
   }
 }
+// same class error
 class same {
   same() {
 
@@ -13,10 +14,19 @@ class same {
   void aa(digit n) {
 
   }
+  /* wrong constructor name */
   different() {
 
   }
 }
 class digit{
 
+}
+
+class d0 : digit{
+  digit _next;
+}
+
+class d1 : digit{
+  digit _next, _next;
 }
