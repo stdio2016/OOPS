@@ -1,6 +1,7 @@
 #pragma once
 #ifndef SYMTABLE_INCLUDED
 #define SYMTABLE_INCLUDED
+#include <stddef.h>
 #include "ast.h"
 #include "class.h"
 
@@ -50,4 +51,6 @@ int pushScope(void);
 void popScope(void);
 
 struct SymTableEntry *getSymEntry(const char *name);
+
+const char *getLocalVarName(int tmpVarId);
 #endif

@@ -203,3 +203,12 @@ void popScope(void) {
 struct SymTableEntry *getSymEntry(const char *name) {
   return MyHash_get(&symTable, name);
 }
+
+const char *getLocalVarName(int tmpVarId) {
+  struct SymTableEntry *e = symStack[tmpVarId];
+  if (e->attr.tag == Attribute_LOCALVAR && e->attr.tmpVarId == tmpVarId) {
+    return e->name;
+  }
+  printf("assert failed! tmp var %d is not symStack[%d]\n", tmpVarId, tmpVarId);
+  exit(EXIT_FAILURE);
+}

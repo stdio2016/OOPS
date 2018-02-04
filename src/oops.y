@@ -203,8 +203,16 @@ newExpr:
 
 callExpr:
 	atom
-	| callExpr '(' callArgs ')' { $$ = createFuncExpr($1, $3.first); }
-	| callExpr '.' nameNode { $$ = createExpr(Op_DOT, $1, $3); }
+	| callExpr '(' callArgs ')' { // $1 cannot be a local variable node
+	    if ($1->op == Op_LOCAL) {
+	      int n = $1->varId;
+	      destroyExpr($1);
+	      char *name = dupstr(getLocalVarName(n));
+	      $1 = createVarExpr(name);
+	    }
+	    $$ = createFuncExpr($1, $3.first);
+	  }
+	| callExpr '.' name { $$ = createExpr(Op_DOT, $1, createVarExpr($3)); }
 	;
 
 callArgs:
