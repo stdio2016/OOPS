@@ -9,8 +9,11 @@ struct Class {
   char *name;
   ClassType base;
   bool defined;
+  int linenum;
+  int id, maxId;
   struct MyHash methods; // char* name -> list of struct Method*
   struct MyHash fields; // char* name -> struct Field*
+  struct ArrayList *subclasses;
 };
 
 enum MethodFlags {
@@ -52,4 +55,6 @@ void destroyMethod(struct Method *method);
 void destroyField(struct Field *field);
 
 int showClassName(ClassType type); // returns chars printed
+
+void giveClassId(void);
 #endif

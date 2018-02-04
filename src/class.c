@@ -5,7 +5,10 @@
 #include "ArrayList.h"
 
 struct MyHash allClasses;
+ClassType *classTable;
 ClassType VoidClass;
+
+extern int linenum; // defined in oops.lex
 
 void initClassTable() {
   MyHash_init(&allClasses, MyHash_strcmp, MyHash_strhash);
@@ -19,6 +22,7 @@ void classTableDestructor(struct HashBucket *hb) {
 
 void destroyClassTable() {
   MyHash_destroy(&allClasses, classTableDestructor);
+  free(classTable);
 }
 
 ClassType getVoidClass() {
@@ -39,13 +43,20 @@ ClassType createClass(const char *name, ClassType baseClass) {
     if (t->defined) {
       semanticError("class " BOLD_TEXT "%s" NORMAL_TEXT " is redeclared\n", name);
     }
-    t->defined = true;
+    else {
+      t->base = baseClass;
+      t->defined = true;
+      t->linenum = linenum;
+    }
     return t;
   }
   t = malloc(sizeof(struct Class));
   t->name = dupstr(name);
   t->base = baseClass;
   t->defined = true;
+  t->linenum = linenum;
+  t->subclasses = malloc(sizeof(struct ArrayList));
+  ArrayList_init(t->subclasses);
   MyHash_init(&t->methods, MyHash_strcmp, MyHash_strhash);
   MyHash_init(&t->fields, MyHash_strcmp, MyHash_strhash);
   MyHash_set(&allClasses, t->name, t);
@@ -73,6 +84,8 @@ void destroyClass(ClassType cls) {
   free(cls->name);
   MyHash_destroy(&cls->methods, methodTableDestructor);
   MyHash_destroy(&cls->fields, fieldTableDestructor);
+  ArrayList_destroy(cls->subclasses);
+  free(cls->subclasses);
   free(cls);
 }
 
@@ -180,4 +193,59 @@ void destroyField(struct Field *field) {
 
 int showClassName(ClassType type) {
   return printf("%s", type->name);
+}
+
+int dfsSubClasses(ClassType base, int id) {
+  size_t i, n = base->subclasses->size;
+  classTable[id] = base;
+  base->id = id;
+  ++id;
+  for (i = 0; i < n; i++) {
+    ClassType sub = ArrayList_get(base->subclasses, i);
+    id = dfsSubClasses(sub, id);
+  }
+  base->maxId = id;
+  printf("class %s id is [%d , %d)\n", base->name, base->id, base->maxId);
+  return id;
+}
+
+void giveClassId() {
+  size_t n = allClasses._size, i;
+  struct MyHashIterator it;
+  classTable = malloc(sizeof(ClassType) * n);
+  // find undeclared classes
+  MyHash_iterate(&allClasses, &it);
+  for (i = 0; i < n; i++) {
+    ClassType cls = it.it->value;
+    cls->id = -1;
+    cls->maxId = -1;
+    if (!cls->defined) {
+      linenum = cls->linenum;
+      semanticError("class %s is undefined\n", cls->name);
+    }
+    MyHash_next(&it);
+  }
+
+  // update subclass list
+  MyHash_iterate(&allClasses, &it);
+  for (i = 0; i < n; i++) {
+    ClassType cls = it.it->value;
+    if (cls->base != NULL) {
+      ArrayList_add(cls->base->subclasses, cls);
+    }
+    MyHash_next(&it);
+  }
+  // really give class id
+  dfsSubClasses(VoidClass, 0);
+
+  // find classes without id
+  MyHash_iterate(&allClasses, &it);
+  for (i = 0; i < n; i++) {
+    ClassType cls = it.it->value;
+    if (cls->id == -1 && cls->defined) {
+      linenum = cls->linenum;
+      semanticError("class %s has circular inheritance\n", cls->name);
+    }
+    MyHash_next(&it);
+  }
 }

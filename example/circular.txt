@@ -1,0 +1,14 @@
+class main{
+  main(){
+
+  }
+}
+class C:A{}
+class A{}
+class B:A{}
+class C:D{}
+class D{}
+class E:D{}
+class G:F{}
+class F:G{}
+class self:self{}

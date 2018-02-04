@@ -32,6 +32,14 @@ int main(int argc, char *argv[]) {
   yylex_destroy();
   destroySymTable();
 
+  // semantic check
+  if (n == 0) { // no syntax error
+    extern int errorCount; // defined in errReport.h
+    // give each class an id
+    giveClassId();
+    n = errorCount;
+  }
+
   destroyClassTable();
   return n;
 }
