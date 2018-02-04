@@ -1,0 +1,149 @@
+class V{V p(V a){putchar(a);}}
+class main:V{
+L s,r;
+main(){
+s=r=new L();
+V u=null;
+Q w=new Q(u,u),
+x=new Q(u,s),
+y=new Q(s,u),
+z=new Q(s,s);
+X a=new H(w,x),
+b=new H(w,y),
+c=new H(w,z),
+d=new H(x,w),
+e=new H(x,x),
+f=new H(x,y),
+g=new H(x,z),
+h=new H(y,w),
+i=new H(y,x),
+j=new H(y,y),
+k=new H(y,z),
+l=new H(z,w),
+m=new H(z,x),
+n=new H(z,y),
+o=new H(z,z),
+p=new X();
+w(f,c);w(f,l);w(f,a);w(g,c);w(g,c);s();w(e,f);w(g,k);w(e,f);s();w(g,p);w(b,h);w(e,f);s();w(f,a);w(b,i);w(g,k);w(g,p);w(g,e);w(g,d);w(f,c);w(f,h);w(f,a);w(g,b);w(b,h);w(f,a);w(b,i);w(c,k);w(g,m);w(g,m);n();
+w(f,c);w(f,l);w(f,a);w(g,c);w(g,c);s();w(f,m);w(f,a);w(f,i);w(f,n);w(c,j);w(e,f);w(g,k);n();
+w(d,l);s();w(g,c);w(b,l);w(g,b);w(c,k);n();
+w(f,m);w(f,a);w(f,i);w(f,n);w(b,h);w(b,i);w(g,k);n();
+w(g,c);w(c,m);w(g,b);w(c,m);w(f,n);w(f,e);w(g,g);s();w(d,l);w(b,h);w(b,i);w(c,k);n();
+w(e,f);s();w(g,e);w(c,m);w(f,n);w(g,e);w(f,l);w(f,l);w(c,k);n();
+w(e,a);s();w(g,g);w(c,m);w(f,n);w(f,e);w(g,g);s();w(e,a);w(b,h);w(g,e);w(b,l);w(g,e);w(b,i);w(b,l);n();
+w(g,h);w(c,m);w(f,n);w(f,e);w(g,g);s();w(e,a);w(b,h);w(g,e);w(b,l);w(g,c);w(b,i);w(b,l);n();
+w(g,i);w(c,m);w(f,n);w(f,e);w(g,g);s();w(e,a);w(b,h);w(g,c);w(b,l);w(g,e);w(b,i);w(b,l);n();
+w(g,j);w(c,m);w(f,n);w(f,e);w(g,g);s();w(e,a);w(b,h);w(g,c);w(b,l);w(g,c);w(b,i);w(c,k);n();
+w(e,h);s();w(f,a);w(c,m);w(f,n);w(f,e);w(g,g);s();w(d,h);w(b,h);w(g,g);w(b,l);w(g,h);w(b,i);w(b,l);n();
+w(f,b);w(c,m);w(f,n);w(f,e);w(g,g);s();w(d,h);w(b,h);w(g,g);w(b,l);w(g,i);w(b,i);w(b,l);n();
+w(f,c);w(c,m);w(f,n);w(f,e);w(g,g);s();w(d,h);w(b,h);w(g,g);w(b,l);w(g,j);w(b,i);w(b,l);n();
+w(f,d);w(c,m);w(f,n);w(f,e);w(g,g);s();w(d,h);w(b,h);w(g,h);w(b,l);w(g,g);w(b,i);w(b,l);n();
+w(f,e);w(c,m);w(f,n);w(f,e);w(g,g);s();w(d,h);w(b,h);w(g,h);w(b,l);w(g,h);w(b,i);w(b,l);n();
+w(f,f);w(c,m);w(f,n);w(f,e);w(g,g);s();w(d,h);w(b,h);w(g,h);w(b,l);w(g,i);w(b,i);w(b,l);n();
+w(f,g);w(c,m);w(f,n);w(f,e);w(g,g);s();w(d,h);w(b,h);w(g,h);w(b,l);w(g,j);w(b,i);w(b,l);n();
+w(f,h);w(c,m);w(f,n);w(f,e);w(g,g);s();w(d,h);w(b,h);w(g,i);w(b,l);w(g,g);w(b,i);w(b,l);n();
+w(f,i);w(c,m);w(f,n);w(f,e);w(g,g);s();w(d,h);w(b,h);w(g,i);w(b,l);w(g,h);w(b,i);w(b,l);n();
+w(f,j);w(c,m);w(f,n);w(f,e);w(g,g);s();w(d,h);w(b,h);w(g,i);w(b,l);w(g,i);w(b,i);w(b,l);n();
+w(f,k);w(c,m);w(f,n);w(f,e);w(g,g);s();w(d,h);w(b,h);w(g,i);w(b,l);w(g,j);w(b,i);w(b,l);n();
+w(f,l);w(c,m);w(f,n);w(f,e);w(g,g);s();w(d,h);w(b,h);w(g,j);w(b,l);w(g,g);w(b,i);w(b,l);n();
+w(f,m);w(c,m);w(f,n);w(f,e);w(g,g);s();w(d,h);w(b,h);w(g,j);w(b,l);w(g,h);w(b,i);w(b,l);n();
+w(f,n);w(c,m);w(f,n);w(f,e);w(g,g);s();w(d,h);w(b,h);w(g,j);w(b,l);w(g,i);w(b,i);w(b,l);n();
+w(f,o);w(c,m);w(f,n);w(f,e);w(g,g);s();w(d,h);w(b,h);w(g,j);w(b,l);w(g,j);w(b,i);w(b,l);n();
+w(g,p);w(c,m);w(f,n);w(f,e);w(g,g);s();w(e,h);w(b,h);w(b,i);w(c,k);n();
+w(new B());
+w(g,b);w(b,n);w(g,p);w(b,h);w(g,b);w(b,i);w(c,k);n();
+w(g,m);n();
+w(e,f);s();w(g,g);w(b,h);w(e,h);s();w(f,a);w(b,l);w(e,h);s();w(f,b);w(b,i);w(g,k);w(g,g);w(b,h);w(f,n);w(f,e);w(g,g);s();w(e,p);w(b,h);w(f,a);w(b,l);w(f,b);w(b,i);w(b,i);w(c,k);w(g,m);n();
+w(e,f);s();w(g,g);w(b,h);w(d,b);s();w(g,p);w(b,i);w(g,k);w(d,l);s();w(f,n);w(c,m);w(f,n);w(f,e);w(g,g);s();w(d,l);w(b,h);w(g,p);w(b,i);w(c,k);w(g,c);w(b,n);w(f,n);w(b,h);w(f,n);w(b,i);w(c,k);w(g,c);w(c,m);w(f,n);w(c,k);w(g,m);n();
+w(e,f);s();w(g,c);w(b,h);w(b,i);w(g,k);w(g,g);w(b,h);w(f,n);w(f,e);w(g,g);s();w(e,c);w(b,h);w(b,i);w(b,i);w(c,k);w(g,m);n();
+w(e,f);s();w(f,n);w(b,h);w(b,i);w(g,k);w(g,g);w(b,h);w(f,n);w(f,e);w(g,g);s();w(d,n);w(b,h);w(b,i);w(b,i);w(c,k);w(g,m);n();
+w(g,m);n();
+w(f,c);w(f,l);w(f,a);w(g,c);w(g,c);s();w(e,a);w(c,j);w(e,f);w(g,k);n();
+w(e,f);s();w(f,a);w(b,l);w(f,b);w(c,k);n();
+w(e,a);w(b,h);w(e,f);s();w(f,c);w(b,l);w(e,f);s();w(f,d);w(b,i);w(g,k);w(f,a);w(c,m);w(f,c);w(c,k);w(f,b);w(c,m);w(f,d);w(c,k);w(g,m);n();
+w(e,f);s();w(g,p);w(b,h);w(b,i);w(g,k);w(g,p);w(b,h);w(f,a);w(b,i);w(c,k);w(g,p);w(b,h);w(f,b);w(b,i);w(c,k);w(g,m);n();
+w(g,m);n();
+w(f,c);w(f,l);w(f,a);w(g,c);w(g,c);s();w(e,h);w(c,j);w(e,f);w(g,k);n();
+w(e,f);s();w(g,p);w(b,h);w(b,i);w(g,k);w(e,f);s();w(f,n);w(c,m);w(f,n);w(g,e);w(f,l);w(f,l);w(c,k);w(g,p);w(b,h);w(f,n);w(b,i);w(c,k);w(g,p);w(b,h);w(f,n);w(b,i);w(c,k);w(g,p);w(b,h);w(f,n);w(b,i);w(c,k);w(g,p);w(b,h);w(f,n);w(b,i);w(c,k);w(g,m);n();
+w(e,f);s();w(g,a);w(b,h);w(b,i);w(g,k);w(g,p);w(g,e);w(g,d);w(g,c);w(b,h);w(b,b);w(g,p);w(b,b);w(b,i);w(c,k);w(g,m);n();
+w(g,m);n();
+w(f,c);w(f,l);w(f,a);w(g,c);w(g,c);s();w(d,h);w(c,j);w(e,h);w(g,k);n();
+w(e,a);s();w(f,a);w(b,l);w(f,b);w(b,l);w(f,n);w(c,k);n();
+w(d,h);w(b,h);w(e,a);s();w(f,c);w(b,l);w(e,a);s();w(f,d);w(b,i);w(g,k);w(f,a);w(c,m);w(f,c);w(c,k);w(f,b);w(c,m);w(f,d);w(c,k);w(g,m);n();
+w(e,f);s();w(g,p);w(b,h);w(b,i);w(g,k);w(f,a);w(b,n);w(g,p);w(b,h);w(b,i);w(c,k);w(f,b);w(b,n);w(g,p);w(b,h);w(b,i);w(c,k);w(g,m);n();
+w(e,f);s();w(g,a);w(b,h);w(b,i);w(g,k);w(g,p);w(b,h);w(f,n);w(b,i);w(c,k);w(g,p);w(b,h);w(f,a);w(b,i);w(c,k);w(g,p);w(b,h);w(f,a);w(b,i);w(c,k);w(g,p);w(b,h);w(f,n);w(b,i);w(c,k);w(f,a);w(b,n);w(g,p);w(b,h);w(b,i);w(c,k);w(f,b);w(b,n);w(g,p);w(b,h);w(b,i);w(c,k);w(g,m);n();
+w(g,m);n();
+w(f,c);w(f,l);w(f,a);w(g,c);w(g,c);s();w(d,b);w(c,j);w(e,f);w(g,k);n();
+w(e,f);s();w(g,p);w(b,h);w(d,l);s();w(f,a);w(b,i);w(g,k);w(f,a);w(b,n);w(g,a);w(b,h);w(b,i);w(c,k);w(g,m);n();
+w(e,f);s();w(g,a);w(b,h);w(b,i);w(g,k);w(g,p);w(g,e);w(g,d);w(g,c);w(b,h);w(b,b);w(g,g);w(b,h);w(f,n);w(f,e);w(g,g);s();w(d,b);w(b,h);w(b,i);w(b,i);w(c,k);w(e,l);w(f,n);w(b,b);w(b,i);w(c,k);w(g,m);n();
+w(g,m);n();
+w(f,c);w(f,l);w(f,a);w(g,c);w(g,c);s();w(e,p);w(c,j);w(d,b);w(g,k);n();
+w(e,h);s();w(f,a);w(b,l);w(f,b);w(c,k);n();
+w(e,p);w(b,h);w(e,h);s();w(f,c);w(b,l);w(e,h);s();w(f,d);w(b,i);w(g,k);w(f,a);w(c,m);w(f,c);w(c,k);w(f,b);w(c,m);w(f,d);w(c,k);w(g,m);n();
+w(e,f);s();w(g,p);w(b,h);w(d,l);s();w(g,e);w(b,i);w(g,k);w(f,a);w(b,n);w(g,p);w(b,h);w(b,i);w(c,k);w(f,b);w(b,n);w(g,p);w(b,h);w(b,i);w(c,k);w(g,m);n();
+w(e,f);s();w(g,a);w(b,h);w(b,i);w(g,k);w(g,p);w(g,e);w(g,d);w(g,c);w(b,h);w(b,b);w(g,g);w(b,h);w(b,b);w(b,i);w(c,k);w(f,a);w(b,n);w(g,a);w(b,h);w(b,i);w(c,k);w(g,p);w(g,e);w(g,d);w(g,c);w(b,h);w(b,b);w(b,l);w(b,b);w(b,i);w(c,k);w(f,b);w(b,n);w(g,a);w(b,h);w(b,i);w(c,k);w(g,p);w(g,e);w(g,d);w(g,c);w(b,h);w(b,b);w(b,i);w(c,k);w(b,b);w(b,i);w(c,k);w(g,m);n();
+w(g,m);n();
+w(f,c);w(f,l);w(f,a);w(g,c);w(g,c);s();w(e,c);w(c,j);w(d,b);w(g,k);n();
+w(e,f);s();w(g,p);w(b,h);w(d,l);s();w(f,a);w(b,i);w(g,k);w(g,p);w(g,e);w(g,d);w(g,c);w(b,h);w(b,b);s();w(b,b);w(b,i);w(c,k);w(g,m);n();
+w(e,f);s();w(g,a);w(b,h);w(b,i);w(g,k);w(g,p);w(g,e);w(g,d);w(g,c);w(b,h);w(b,b);w(g,c);w(b,h);w(b,i);w(c,k);w(b,b);w(b,i);w(c,k);w(g,m);n();
+w(g,m);n();
+w(f,c);w(f,l);w(f,a);w(g,c);w(g,c);s();w(d,n);w(c,j);w(d,b);w(g,k);n();
+w(e,f);s();w(g,p);w(b,h);w(d,l);s();w(f,a);w(b,i);w(g,k);w(g,p);w(g,e);w(g,d);w(g,c);w(b,h);w(b,b);w(e,l);w(f,n);w(b,b);w(b,i);w(c,k);w(g,m);n();
+w(e,f);s();w(g,a);w(b,h);w(b,i);w(g,k);w(g,p);w(g,e);w(g,d);w(g,c);w(b,h);w(b,b);w(f,n);w(b,h);w(b,i);w(c,k);w(e,l);w(f,n);w(b,b);w(b,i);w(c,k);w(g,m);n();
+w(g,m);n();
+w(f,c);w(f,l);w(f,a);w(g,c);w(g,c);s();w(d,l);w(c,j);w(e,f);w(g,k);n();
+w(d,b);s();w(f,i);w(c,k);w(d,l);s();w(f,n);w(c,k);n();
+w(d,l);w(b,h);w(b,i);w(g,k);w(g,m);n();
+w(d,l);w(b,h);w(d,b);s();w(f,b);w(b,i);w(g,k);w(f,i);w(c,m);w(f,b);w(c,k);w(g,m);n();
+w(d,l);s();w(f,n);w(b,h);w(d,l);s();w(f,a);w(b,i);w(g,k);w(g,b);w(f,e);w(g,d);w(g,e);w(g,b);w(f,n);s();w(f,n);w(c,m);w(f,a);w(c,k);w(g,m);n();
+w(e,f);s();w(g,p);w(b,h);w(d,l);s();w(f,a);w(b,i);w(g,k);w(f,i);w(b,n);w(g,p);w(b,h);w(f,a);w(b,i);w(c,k);w(f,n);w(b,n);w(g,p);w(b,h);w(f,a);w(b,i);w(c,k);w(g,m);n();
+w(e,f);s();w(g,a);w(b,h);w(b,i);w(g,k);w(f,i);w(b,n);w(g,a);w(b,h);w(b,i);w(c,k);w(f,n);w(b,n);w(g,a);w(b,h);w(b,i);w(c,k);w(g,m);n();
+w(g,m);n();
+r.p(r);
+}
+V w(X a,X b){w(new P(a,b));}
+V w(B p){L n=new L(p);s.n(n);s=n;}
+V s(){w(new S());}
+V n(){w(new N());}
+}
+class Q:V{
+V a,b;
+Q(V c,V d){a=c;b=d;}
+V p(){p(a);p(b);}
+}
+class X:V{
+V p(){V n=null;p(n);p(n);p(n);p(n);}
+V q(){puts("p");}
+}
+class H:X{
+Q a,b,n;
+H(Q c,Q d){a=c;b=d;}
+V p(){a.p();b.p();}
+V q(){p(n);p(a);p(a);p(n);a.p();b.p();}
+}
+class B:V{
+V p(L a){a.q();}
+V q(){puts("w(new B());\n");}
+}
+class P:B{
+X a,b;
+P(X c,X d){a=c;b=d;}
+V p(L u){a.p();b.p();}
+V q(){puts("w(");a.q();puts(",");b.q();puts(");");}
+}
+class S:B{
+V p(L a){puts(" ");}
+V q(){puts("s();");}
+}
+class N:B{
+V p(L a){puts("\n");}
+V q(){puts("n();\n");}
+}
+class L:V{
+B i;L n;
+L(){}
+L(B b){i=b;}
+L n(L a){return n=a;}
+V p(L a){i.p(a);n.p(a);}
+V q(){i.q();n.q();}
+}
