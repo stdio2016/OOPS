@@ -17,6 +17,7 @@ return { return RETURN; }
 new { return NEW; }
 this { return THIS; }
 super { return SUPER; }
+null { return NUL; }
 
 [(),.:;={}] { return yytext[0]; }
 

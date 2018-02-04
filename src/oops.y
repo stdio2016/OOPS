@@ -19,10 +19,13 @@ ClassType thisClass;
   int scope;
   struct Expr *expr;
   struct ExprList args;
+  struct Statement *stmt;
+  struct StatementList stmtList;
+  struct Method *method;
 }
 
 // keywords
-%token CLASS RETURN NEW THIS SUPER
+%token CLASS RETURN NEW THIS SUPER NUL
 %token<str> IDENTIFIER STRING
 %token ERROR
 
@@ -31,13 +34,21 @@ ClassType thisClass;
 %type<cls> inherit type
 %type<argList> argumentList
 %type<scope> PushScope
-%type<expr> expression newExpr callExpr atom nameNode varDecl
+%type<expr> expression newExpr callExpr atom nameNode
 %type<args> callArgs callArgsNonEmpty
+%type<stmt> statement varDecls return block methodBody varDecl
+%type<stmtList> statements varList
+%type<method> methodHead constructorHead
 
 %destructor { free($$); } <str>
 %destructor { } <cls>
 %destructor { free($$.types); } <argList>
 %destructor { showScope(0); popScope(); } <scope>
+%destructor { destroyExpr($$); } <expr>
+%destructor { destroyExpr($$.first); } <args>
+%destructor { destroyStmt($$); } <stmt>
+%destructor { destroyStmt($$.first); } <stmtList>
+%destructor { } <method>
 
 %%
 program:
@@ -82,19 +93,29 @@ fieldList:
 	;
 
 method:
-	methodHead methodBody
+	methodHead methodBody {
+	  if ($1 != NULL)
+	    $1->ast = $2;
+	  else
+	    destroyStmt($2);
+	}
 	;
 
 methodHead:
 	type name '(' PushScope argumentList ')' {
 	  int scope = $4;
-	  addMethod(Method_METHOD, thisClass, $1, $2, $5);
+	  $$ = addMethod(Method_METHOD, thisClass, $1, $2, $5);
 	  free($2);
 	}
 	;
 
 constructor:
-	constructorHead methodBody
+	constructorHead methodBody {
+	  if ($1 != NULL)
+	    $1->ast = $2;
+	  else
+	    destroyStmt($2);
+	}
 	;
 
 constructorHead:
@@ -103,7 +124,7 @@ constructorHead:
 	  if (strcmp($1, thisClass->name)) {
 	    semanticError("constructor name and class name differs\n");
 	  }
-	  addMethod(Method_CONSTRUCTOR, thisClass, getVoidClass(), $1, $4);
+	  $$ = addMethod(Method_CONSTRUCTOR, thisClass, getVoidClass(), $1, $4);
 	  free($1);
 	}
 	;
@@ -123,34 +144,34 @@ argument:
 	;
 
 methodBody:
-	'{' statements '}' { showScope(0); popScope(); }
+	'{' statements '}' { showScope(0); popScope(); $$ = createCompoundStmt($2); }
 	;
 
 block:
-	'{' PushScope statements '}' { int s = $2; showScope(0); popScope(); }
+	'{' PushScope statements '}' { int s = $2; showScope(0); popScope(); $$ = createCompoundStmt($3); }
 	;
 
 PushScope: { $$ = pushScope(); };
 
 statements:
-	/* empty */
-	| statements statement
+	/* empty */ { initStmtList(&$$); }
+	| statements statement { addToStmtList(&$1, $2); $$ = $1; }
 	;
 
 statement:
 	varDecls
 	| return
 	| block
-	| expression ';' { showExpr($1, 2); }
+	| expression ';' { showExpr($1, 2); $$ = createStmt(Stmt_SIMPLE, $1); }
 	;
 
 varDecls:
-	type varList ';'
+	type varList ';' { currentType = $1; $$ = createCompoundStmt($2); }
 	;
 
 varList:
-	varDecl
-	| varList ',' varDecl
+	varDecl { initStmtList(&$$); addToStmtList(&$$, $1); }
+	| varList ',' varDecl { addToStmtList(&$1, $3); $$ = $1; }
 	;
 
 varDecl:
@@ -159,14 +180,15 @@ varDecl:
 	    int id = addLocalVar(currentType, $1);
 	    struct Expr *var = createLocalVarExpr(id);
 	    var->type = currentType;
-	    $$ = createExpr(Op_ASSIGN, var, $3);
-	    showExpr($$, 2);
+	    struct Expr *as = createExpr(Op_ASSIGN, var, $3);
+	    $$ = createStmt(Stmt_SIMPLE, as);
+	    showExpr(as, 2);
 	    free($1);
 	  }
 	;
 
 return:
-	RETURN expression ';' { showExpr($2, 2); }
+	RETURN expression ';' { showExpr($2, 2); $$ = createStmt(Stmt_RETURN, $2); }
 	;
 
 expression:
@@ -206,6 +228,7 @@ atom:
 	nameNode
 	| THIS { $$ = createExpr(Op_THIS, NULL, NULL); }
 	| SUPER { $$ = createExpr(Op_SUPER, NULL, NULL); }
+	| NUL { $$ = createExpr(Op_NULL, NULL, NULL); }
 	| STRING {
 	    struct Constant a;
 	    a.type = Type_STRING;
@@ -228,6 +251,7 @@ nameNode: IDENTIFIER {
   else {
     $$ = createLocalVarExpr(e->attr.tmpVarId);
     $$->type = e->type;
+    free($1);
   }
 };
 

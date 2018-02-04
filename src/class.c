@@ -106,7 +106,7 @@ void showSignature(struct ArgType args) {
   putchar(')');
 }
 
-void addMethod(enum MethodFlags flag, ClassType cls, ClassType returnType, const char *name, struct ArgType arguments) {
+struct Method *addMethod(enum MethodFlags flag, ClassType cls, ClassType returnType, const char *name, struct ArgType arguments) {
   printf("  ");
   showMethodFlag(flag);
   printf(" %s", name);
@@ -145,11 +145,14 @@ void addMethod(enum MethodFlags flag, ClassType cls, ClassType returnType, const
     m->flag = flag;
     m->refcount = 1;
     m->args = arguments;
+    m->ast = NULL;
     ArrayList_add(arr, m);
+    return m;
   }
   else {
     destroyArgType(arguments);
   }
+  return NULL;
 }
 
 void showMethodFlag(enum MethodFlags flag) {
@@ -162,6 +165,7 @@ void destroyMethod(struct Method *method) {
   if (method->refcount == 0) {
     free(method->name);
     destroyArgType(method->args);
+    destroyStmt(method->ast);
     free(method);
   }
 }

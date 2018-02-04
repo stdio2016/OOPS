@@ -25,6 +25,7 @@ struct Method {
   enum MethodFlags flag;
   size_t refcount;
   struct ArgType args;
+  struct Statement *ast;
 };
 
 struct Field {
@@ -44,7 +45,7 @@ void destroyClass(ClassType cls);
 void showSignature(struct ArgType args);
 
 void addField(ClassType cls, ClassType type, const char *name);
-void addMethod(enum MethodFlags flag, ClassType cls, ClassType returnType, const char *name, struct ArgType arguments);
+struct Method *addMethod(enum MethodFlags flag, ClassType cls, ClassType returnType, const char *name, struct ArgType arguments);
 void showMethodFlag(enum MethodFlags flag);
 
 void destroyMethod(struct Method *method);

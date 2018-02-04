@@ -23,7 +23,8 @@ enum Operator {
   Op_THIS, // this
   Op_SUPER, // super
   Op_VAR, // variable reference or class or method name
-  Op_LOCAL // local variable reference
+  Op_LOCAL, // local variable reference
+  Op_NULL // null
 };
 
 enum TypeEnum {
@@ -55,6 +56,26 @@ struct Expr {
   struct Expr *next;
 };
 
+enum StatementType {
+  Stmt_SIMPLE, // expr;
+  Stmt_RETURN, // return expr;
+  Stmt_COMPOUND // { ... }
+};
+
+struct StatementList {
+  struct Statement *first;
+  struct Statement *last;
+};
+
+struct Statement {
+  enum StatementType type;
+  union {
+    struct Expr *expr;
+    struct Statement *stmt;
+  };
+  struct Statement *next;
+};
+
 char *dupstr(const char *str);
 
 void destroyArgType(struct ArgType a);
@@ -73,5 +94,12 @@ void showExpr(struct Expr *expr, int depth);
 
 void initExprList(struct ExprList *list);
 void addToExprList(struct ExprList *list, struct Expr *expr);
+
+struct Statement *createStmt(enum StatementType stmt, struct Expr *expr);
+struct Statement *createCompoundStmt(struct StatementList body);
+void destroyStmt(struct Statement *stmt);
+
+void initStmtList(struct StatementList *list);
+void addToStmtList(struct StatementList *list, struct Statement *stmt);
 
 #endif

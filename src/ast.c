@@ -94,6 +94,9 @@ void destroyExpr(struct Expr *expr) {
     else if (p->op == Op_LIT) {
       destroyConst(p->lit);
     }
+    else if (p->op == Op_LOCAL) {
+      // do nothing
+    }
     else {
       destroyExpr(p->args);
     }
@@ -113,7 +116,8 @@ char *OpName[] = {
   "<this>", // this
   "<super>", // super
   "<var> ", // variable reference or class or method name
-  "<local> " // local variable reference
+  "<local> ", // local variable reference
+  "<null>"
 };
 
 void showExprType(struct Expr *expr) {
@@ -166,4 +170,53 @@ void addToExprList(struct ExprList *list, struct Expr *expr) {
     list->last->next = expr;
   }
   list->last = expr;
+}
+
+struct Statement *createStmt(enum StatementType type, struct Expr *expr) {
+  struct Statement *s = malloc(sizeof(*s));
+  s->type = type;
+  s->expr = expr;
+  s->next = NULL;
+  return s;
+}
+
+struct Statement *createCompoundStmt(struct StatementList body) {
+  struct Statement *s = malloc(sizeof(*s));
+  s->type = Stmt_COMPOUND;
+  s->stmt = body.first;
+  s->next = NULL;
+  return s;
+}
+
+void destroyStmt(struct Statement *stmt) {
+  struct Statement *p = stmt, *q;
+  while (p != NULL) {
+    if (p->type == Stmt_COMPOUND) {
+      destroyStmt(p->stmt);
+    }
+    else if (p->type == Stmt_SIMPLE || p->type == Stmt_RETURN) {
+      destroyExpr(p->expr);
+    }
+    else {
+      printf("Unknown statement type %d", p->type);
+    }
+    q = p;
+    p = p->next;
+    free(q);
+  }
+}
+
+void initStmtList(struct StatementList *list) {
+  list->first = list->last = NULL;
+}
+
+void addToStmtList(struct StatementList *list, struct Statement *stmt) {
+  if (stmt == NULL) return ;
+  if (list->first == NULL) {
+    list->first = stmt;
+  }
+  else {
+    list->last->next = stmt;
+  }
+  list->last = stmt;
 }
