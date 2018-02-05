@@ -195,7 +195,7 @@ int showClassName(ClassType type) {
   return printf("%s", type->name);
 }
 
-int dfsSubClasses(ClassType base, int id) {
+static int dfsSubClasses(ClassType base, int id) {
   size_t i, n = base->subclasses->size;
   classTable[id] = base;
   base->id = id;

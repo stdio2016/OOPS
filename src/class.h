@@ -7,13 +7,16 @@
 
 struct Class {
   char *name;
-  ClassType base;
+  struct Class *base;
   bool defined;
   int linenum;
   int id, maxId;
   struct MyHash methods; // char* name -> list of struct Method*
   struct MyHash fields; // char* name -> struct Field*
   struct ArrayList *subclasses;
+  struct Method **methodTable;
+  struct Field **fieldTable;
+  int fieldCount;
 };
 
 enum MethodFlags {
@@ -26,15 +29,18 @@ struct Method {
   struct Class *returnType;
   char *name;
   enum MethodFlags flag;
+  int id;
   size_t refcount;
   struct ArgType args;
   struct Statement *ast;
 };
 
 struct Field {
+  struct Class *thisClass;
   struct Class *type;
   char *name;
   size_t refcount;
+  int id;
 };
 
 void initClassTable(void);
