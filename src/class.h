@@ -21,7 +21,8 @@ struct Class {
 
 enum MethodFlags {
   Method_METHOD = 0,
-  Method_CONSTRUCTOR = 1
+  Method_CONSTRUCTOR = 1,
+  Method_BUILTIN = 2 // no need to compile
 };
 
 struct Method {

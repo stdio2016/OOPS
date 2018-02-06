@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "symtable.h"
 #include "class.h"
+#include "builtin.h"
 extern FILE* yyin;
 extern int yyparse();
 extern void yylex_destroy();
@@ -20,6 +21,7 @@ int main(int argc, char *argv[]) {
   // parse OOPS code
   initSymTable();
   initClassTable();
+  addBuiltinMethods();
   int n = yyparse();
   if (n == 0) {
     printf("There is no syntax error! :-)\n");
