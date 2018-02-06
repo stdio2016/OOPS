@@ -123,8 +123,10 @@ constructorHead:
 	  int scope = $3;
 	  if (strcmp($1, thisClass->name)) {
 	    semanticError("constructor name and class name differs\n");
+	    $$ = NULL;
 	  }
-	  $$ = addMethod(Method_CONSTRUCTOR, thisClass, getVoidClass(), $1, $4);
+	  else
+	    $$ = addConstructor(Method_CONSTRUCTOR, thisClass, $4);
 	  free($1);
 	}
 	;

@@ -169,6 +169,10 @@ struct Method *addMethod(enum MethodFlags flag, ClassType cls, ClassType returnT
   return NULL;
 }
 
+struct Method *addConstructor(enum MethodFlags flag, ClassType cls, struct ArgType arguments) {
+  return addMethod(flag | Method_CONSTRUCTOR, cls, VoidClass, "<init>", arguments);
+}
+
 void showMethodFlag(enum MethodFlags flag) {
   if (flag & Method_CONSTRUCTOR) printf("constructor");
   else printf("method");
@@ -249,4 +253,17 @@ void giveClassId() {
     }
     MyHash_next(&it);
   }
+}
+
+static void dfsProcessInheritance(struct Class *cls) {
+  size_t i, n = cls->subclasses->size;
+  printf("class %s\n", cls->name);
+  for (i = 0; i < n; i++) {
+    ClassType sub = ArrayList_get(cls->subclasses, i);
+    dfsProcessInheritance(sub);
+  }
+}
+
+void processInheritance(void) {
+  dfsProcessInheritance(VoidClass);
 }

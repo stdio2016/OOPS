@@ -56,6 +56,7 @@ void showSignature(struct ArgType args);
 
 void addField(ClassType cls, ClassType type, const char *name);
 struct Method *addMethod(enum MethodFlags flag, ClassType cls, ClassType returnType, const char *name, struct ArgType arguments);
+struct Method *addConstructor(enum MethodFlags flag, ClassType cls, struct ArgType arguments);
 void showMethodFlag(enum MethodFlags flag);
 
 void destroyMethod(struct Method *method);
@@ -64,4 +65,6 @@ void destroyField(struct Field *field);
 int showClassName(ClassType type); // returns chars printed
 
 void giveClassId(void);
+
+void processInheritance(void);
 #endif

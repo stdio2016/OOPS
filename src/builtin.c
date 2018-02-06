@@ -16,6 +16,8 @@ void addBuiltinMethods() {
   struct Class *Void = getVoidClass();
   struct Method *m;
   ClassType sig[100];
+  // void()
+  m = addConstructor(Method_BUILTIN, Void, createArgType(0, sig));
   // void getchar()
   m = addMethod(Method_BUILTIN, Void, Void, "getchar", createArgType(0, sig));
   // void feof()

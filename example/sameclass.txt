@@ -5,6 +5,9 @@ class same {
   void aa(digit n) {
 
   }
+  // should not be error
+  void same() {
+  }
 }
 // same class error
 class same {

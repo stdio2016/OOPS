@@ -19,6 +19,7 @@ int main(int argc, char *argv[]) {
   yyin = f;
 
   // parse OOPS code
+  // and semantic check 1: redeclared variables/classes/methods
   initSymTable();
   initClassTable();
   addBuiltinMethods();
@@ -34,12 +35,17 @@ int main(int argc, char *argv[]) {
   yylex_destroy();
   destroySymTable();
 
-  // semantic check
+  // semantic check 2: cyclic class inheritance and undefined classes
   if (n == 0) { // no syntax error
     extern int errorCount; // defined in errReport.h
     // give each class an id
     giveClassId();
     n = errorCount;
+  }
+
+  // add inherited methods and fields
+  if (n == 0) { // no semantic error
+    processInheritance();
   }
 
   destroyClassTable();
