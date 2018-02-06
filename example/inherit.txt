@@ -1,0 +1,18 @@
+class Car {
+  Num speed;
+  Num fuel;
+}
+
+class PoliceCar : Car {
+  void alarm;
+}
+
+class RaceCar : Car {
+  Num turbo;
+}
+
+class FlyingCar : RaceCar {
+  void fuel; // should mask fuel in class Car
+}
+
+class Num {}

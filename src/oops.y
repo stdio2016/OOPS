@@ -123,6 +123,7 @@ constructorHead:
 	  int scope = $3;
 	  if (strcmp($1, thisClass->name)) {
 	    semanticError("constructor name and class name differs\n");
+	    destroyArgType($4);
 	    $$ = NULL;
 	  }
 	  else

@@ -59,6 +59,9 @@ ClassType createClass(const char *name, ClassType baseClass) {
   ArrayList_init(t->subclasses);
   MyHash_init(&t->methods, MyHash_strcmp, MyHash_strhash);
   MyHash_init(&t->fields, MyHash_strcmp, MyHash_strhash);
+  t->methodTable = NULL;
+  t->fieldTable = NULL;
+  t->fieldCount = 0;
   MyHash_set(&allClasses, t->name, t);
   return t;
 }
@@ -86,6 +89,8 @@ void destroyClass(ClassType cls) {
   MyHash_destroy(&cls->fields, fieldTableDestructor);
   ArrayList_destroy(cls->subclasses);
   free(cls->subclasses);
+  free(cls->fieldTable);
+  free(cls->methodTable);
   free(cls);
 }
 
@@ -97,6 +102,7 @@ void addField(ClassType cls, ClassType type, const char *name) {
     f->name = dupstr(name);
     f->type = type;
     f->refcount = 1;
+    f->thisClass = cls;
     MyHash_set(&cls->fields, f->name, f);
   }
   else {
@@ -256,8 +262,41 @@ void giveClassId() {
 }
 
 static void dfsProcessInheritance(struct Class *cls) {
-  size_t i, n = cls->subclasses->size;
-  printf("class %s\n", cls->name);
+  size_t i;
+  struct Class *base = cls->base;
+  printf("class %s : %s {\n", cls->name, base->name);
+
+  // add my fields
+  int size = base->fieldCount + cls->fields._size;
+  cls->fieldTable = malloc(sizeof(struct Field *) * size);
+  struct MyHashIterator it;
+  MyHash_iterate(&cls->fields, &it);
+  for (i = base->fieldCount; i < size; i++) {
+    struct Field *f = it.it->value;
+    cls->fieldTable[i] = f;
+    f->id = i;
+    MyHash_next(&it);
+  }
+  // add inherited fields
+  for (i = 0; i < base->fieldCount; i++) {
+    struct Field *f = base->fieldTable[i];
+    cls->fieldTable[i] = f;
+    if (MyHash_get(&cls->fields, f->name) == NULL) {
+      MyHash_set(&cls->fields, f->name, f);
+      f->refcount++;
+    }
+  }
+  cls->fieldCount = size;
+
+  // show fields
+  for (i = 0; i < size; i++) {
+    struct Field *f = cls->fieldTable[i];
+    printf("  %s %s; // id=%d, from %s\n", f->type->name, f->name, f->id, f->thisClass->name);
+  }
+
+  puts("}");
+
+  size_t n = cls->subclasses->size;
   for (i = 0; i < n; i++) {
     ClassType sub = ArrayList_get(cls->subclasses, i);
     dfsProcessInheritance(sub);
@@ -265,5 +304,10 @@ static void dfsProcessInheritance(struct Class *cls) {
 }
 
 void processInheritance(void) {
-  dfsProcessInheritance(VoidClass);
+  struct Class *cls = VoidClass;
+  size_t i, n = cls->subclasses->size;
+  for (i = 0; i < n; i++) {
+    ClassType sub = ArrayList_get(cls->subclasses, i);
+    dfsProcessInheritance(sub);
+  }
 }
