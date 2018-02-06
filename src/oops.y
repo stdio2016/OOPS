@@ -43,7 +43,7 @@ ClassType thisClass;
 %destructor { free($$); } <str>
 %destructor { } <cls>
 %destructor { free($$.types); } <argList>
-%destructor { showScope(0); popScope(); } <scope>
+%destructor { popScope(); } <scope>
 %destructor { destroyExpr($$); } <expr>
 %destructor { destroyExpr($$.first); } <args>
 %destructor { destroyStmt($$); } <stmt>
@@ -144,11 +144,11 @@ argument:
 	;
 
 methodBody:
-	'{' statements '}' { showScope(0); popScope(); $$ = createCompoundStmt($2); }
+	'{' statements '}' { popScope(); $$ = createCompoundStmt($2); }
 	;
 
 block:
-	'{' PushScope statements '}' { int s = $2; showScope(0); popScope(); $$ = createCompoundStmt($3); }
+	'{' PushScope statements '}' { int s = $2; popScope(); $$ = createCompoundStmt($3); }
 	;
 
 PushScope: { $$ = pushScope(); };

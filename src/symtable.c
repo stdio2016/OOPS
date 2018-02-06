@@ -142,7 +142,6 @@ void addParamVar(ClassType cls, const char *name) {
     symStack[stackTop-1]->attr.tag = Attribute_LOCALVAR;
     symStack[stackTop-1]->attr.tmpVarId = localVarCount++;
   }
-  printf("    param %s\n", name);
 }
 
 int addLocalVar(ClassType cls, const char *name) {

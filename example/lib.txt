@@ -1,0 +1,14 @@
+class void {
+  void putchar(void bit) {
+
+  }
+  void puts(void str) {
+
+  }
+  void getchar() {
+
+  }
+  void feof() {
+
+  }
+}

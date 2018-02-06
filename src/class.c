@@ -124,6 +124,7 @@ struct Method *addMethod(enum MethodFlags flag, ClassType cls, ClassType returnT
   showMethodFlag(flag);
   printf(" %s", name);
   showSignature(arguments);
+  printf(": %s", returnType->name);
   puts("");
   struct ArrayList *arr = MyHash_get(&cls->methods, name);
   if (arr == NULL) {
