@@ -1,6 +1,7 @@
 #pragma once
 #ifndef MyHash_INCLUDED
 #define MyHash_INCLUDED
+#include <stddef.h>
 struct HashBucket {
   struct HashBucket *next;
   void *key;
