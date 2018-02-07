@@ -62,6 +62,7 @@ ClassType createClass(const char *name, ClassType baseClass) {
   t->methodTable = NULL;
   t->fieldTable = NULL;
   t->fieldCount = 0;
+  t->methodCount = 0;
   MyHash_set(&allClasses, t->name, t);
   return t;
 }
@@ -92,6 +93,10 @@ void destroyClass(ClassType cls) {
   free(cls->fieldTable);
   free(cls->methodTable);
   free(cls);
+}
+
+bool isKindOf(struct Class *some, struct Class *base) {
+  return some->id >= base->id && some->id < base->maxId;
 }
 
 void addField(ClassType cls, ClassType type, const char *name) {
@@ -174,6 +179,7 @@ struct Method *addMethod(enum MethodFlags flag, ClassType cls, ClassType returnT
     m->ast = NULL;
     m->id = ID_UNASSIGNED;
     ArrayList_add(arr, m);
+    cls->methodCount++;
     return m;
   }
   else {
@@ -211,6 +217,22 @@ void destroyField(struct Field *field) {
 
 int showClassName(ClassType type) {
   return printf("%s", type->name);
+}
+
+void showClassInterfaces(struct Class *cls) {
+  printf("class %s : %s {\n", cls->name, cls->base == NULL ? "<null>" : cls->base->name);
+  int i;
+  for (i = 0; i < cls->fieldCount; i++) {
+    struct Field *f = cls->fieldTable[i];
+    printf("  %s %s; // from %s, id=%d\n", f->type->name, f->name, f->thisClass->name, f->id);
+  }
+  for (i = 0; i < cls->methodCount; i++) {
+    struct Method *m = cls->methodTable[i];
+    printf("  %s %s", m->returnType->name, m->name);
+    showSignature(m->args);
+    printf("; // from %s, id=%d\n", m->thisClass->name, m->id);
+  }
+  puts("}");
 }
 
 static int dfsSubClasses(ClassType base, int id) {
@@ -268,11 +290,9 @@ void giveClassId() {
   }
 }
 
-static void dfsProcessInheritance(struct Class *cls) {
-  size_t i;
+static void inheritFields(struct Class *cls) {
   struct Class *base = cls->base;
-  printf("class %s : %s {\n", cls->name, base->name);
-
+  int i;
   // add my fields
   int size = base->fieldCount + cls->fields._size;
   cls->fieldTable = malloc(sizeof(struct Field *) * size);
@@ -294,47 +314,75 @@ static void dfsProcessInheritance(struct Class *cls) {
     }
   }
   cls->fieldCount = size;
+}
 
-  // show fields
-  for (i = 0; i < size; i++) {
-    struct Field *f = cls->fieldTable[i];
-    printf("  %s %s; // id=%d, from %s\n", f->type->name, f->name, f->id, f->thisClass->name);
-  }
-
+static void inheritMethods(struct Class *cls) {
+  struct Class *base = cls->base;
+  int i;
+  struct MyHashIterator it;
   // add inherited methods
-  MyHash_iterate(&base->methods, &it);
+  if (base != NULL) {
+    MyHash_iterate(&base->methods, &it);
+    while (it.it != NULL) {
+      char *name = it.it->key;
+      struct ArrayList *marr = it.it->value;
+      struct ArrayList *mymarr = MyHash_get(&cls->methods, name);
+      if (mymarr == NULL) {
+        mymarr = malloc(sizeof(struct ArrayList));
+        ArrayList_init(mymarr);
+        MyHash_set(&cls->methods, dupstr(name), mymarr);
+      }
+      for (i = 0; i < marr->size; i++) {
+        struct Method *m = ArrayList_get(marr, i), *mym;
+        size_t j, n = mymarr->size;
+        for (j = 0; j < n; j++) {
+          mym = ArrayList_get(mymarr, j);
+          if (isSameSignature(m->args, mym->args))
+            break;
+        }
+        if (j < n) { // overrided
+          mym->id = m->id;
+          if (!isKindOf(mym->returnType, m->returnType)) {
+            semanticError("method ");
+            printf("%s", name);
+            showSignature(mym->args);
+            printf(" in %s cannot override method ", cls->name);
+            printf("in %s because return type is not compatible\n", base->name);
+          }
+        }
+        else { // not overrided
+          cls->methodCount++;
+          m->refcount++;
+          ArrayList_add(mymarr, m);
+        }
+      }
+      MyHash_next(&it);
+    }
+  }
+  int id = 0;
+  if (base != NULL) id = base->methodCount; // first own method id
+  cls->methodTable = malloc(sizeof(struct Method*) * cls->methodCount);
+  // process my own method
+  MyHash_iterate(&cls->methods, &it);
   while (it.it != NULL) {
     char *name = it.it->key;
-    struct ArrayList *marr = it.it->value;
-    struct ArrayList *mymarr = MyHash_get(&cls->methods, name);
-    if (mymarr == NULL) {
-      mymarr = malloc(sizeof(struct ArrayList));
-      ArrayList_init(mymarr);
-      MyHash_set(&cls->methods, dupstr(name), mymarr);
-    }
-    for (i = 0; i < marr->size; i++) {
-      struct Method *m = ArrayList_get(marr, i), *mym;
-      size_t j, n = mymarr->size;
-      for (j = 0; j < n; j++) {
-        mym = ArrayList_get(mymarr, j);
-        if (isSameSignature(m->args, mym->args))
-          break;
+    struct ArrayList *arr = it.it->value;
+    for (i = 0; i < arr->size; i++) {
+      struct Method *m = ArrayList_get(arr, i);
+      if (m->id == ID_UNASSIGNED) {
+        m->id = id++;
       }
-      printf("  method %s", name);
-      showSignature(m->args);
-      if (j < n) {
-        mym->id = m->id;
-        printf(" overrided\n");
-      }
-      else {
-        printf(" not overrided\n");
-      }
+      cls->methodTable[m->id] = m;
     }
     MyHash_next(&it);
   }
-  puts("}");
+}
 
-  size_t n = cls->subclasses->size;
+static void dfsProcessInheritance(struct Class *cls) {
+  if (cls != VoidClass) inheritFields(cls);
+  inheritMethods(cls);
+  showClassInterfaces(cls);
+  size_t n = cls->subclasses->size, i;
   for (i = 0; i < n; i++) {
     ClassType sub = ArrayList_get(cls->subclasses, i);
     dfsProcessInheritance(sub);
@@ -342,10 +390,5 @@ static void dfsProcessInheritance(struct Class *cls) {
 }
 
 void processInheritance(void) {
-  struct Class *cls = VoidClass;
-  size_t i, n = cls->subclasses->size;
-  for (i = 0; i < n; i++) {
-    ClassType sub = ArrayList_get(cls->subclasses, i);
-    dfsProcessInheritance(sub);
-  }
+  dfsProcessInheritance(VoidClass);
 }

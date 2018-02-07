@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include "MyHash.h"
 #include "ast.h"
-#define ID_UNASSIGNED 0
+#define ID_UNASSIGNED -1
 
 struct Class {
   char *name;
@@ -18,6 +18,7 @@ struct Class {
   struct Method **methodTable;
   struct Field **fieldTable;
   int fieldCount;
+  int methodCount;
 };
 
 enum MethodFlags {
@@ -52,6 +53,7 @@ ClassType getVoidClass(void);
 ClassType getClass(const char *name);
 ClassType createClass(const char *name, ClassType baseClass);
 void destroyClass(ClassType cls);
+bool isKindOf(struct Class *some, struct Class *base);
 
 void showSignature(struct ArgType args);
 bool isSameSignature(struct ArgType args1, struct ArgType args2);
@@ -65,6 +67,7 @@ void destroyMethod(struct Method *method);
 void destroyField(struct Field *field);
 
 int showClassName(ClassType type); // returns chars printed
+void showClassInterfaces(struct Class *cls);
 
 void giveClassId(void);
 
