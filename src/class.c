@@ -125,6 +125,16 @@ void showSignature(struct ArgType args) {
   putchar(')');
 }
 
+bool isSameSignature(struct ArgType args1, struct ArgType args2) {
+  if (args1.arity != args2.arity) return false; // arg count differs
+  int i;
+  for (i = 0; i < args1.arity; i++) {
+    if (args1.types[i] != args2.types[i])
+      return false; // arg type differs
+  }
+  return true;
+}
+
 struct Method *addMethod(enum MethodFlags flag, ClassType cls, ClassType returnType, const char *name, struct ArgType arguments) {
   printf("  ");
   showMethodFlag(flag);
@@ -143,19 +153,15 @@ struct Method *addMethod(enum MethodFlags flag, ClassType cls, ClassType returnT
   for (i = 0; i < n; i++) {
     // check if there is a method with the same signature
     struct Method *m = ArrayList_get(arr, i);
-    size_t nargs = m->args.arity, j;
-    if (nargs != arguments.arity) continue; // arg count differs
-    for (j = 0; j < nargs; j++) {
-      if (m->args.types[j] != arguments.types[j])
-        break; // arg type differs
+    if (isSameSignature(m->args, arguments)) {
+      semanticError("");
+      showMethodFlag(flag);
+      printf(" " BOLD_TEXT "%s" NORMAL_TEXT, name);
+      showSignature(arguments);
+      printf(" is already defined in class %s\n", cls->name);
+      success = false;
+      break;
     }
-    if (j < nargs) continue; // arg type differs
-    semanticError("");
-    showMethodFlag(flag);
-    printf(" " BOLD_TEXT "%s" NORMAL_TEXT, name);
-    showSignature(arguments);
-    printf(" is already defined in class %s\n", cls->name);
-    success = false;
   }
   if (success) {
     struct Method *m = malloc(sizeof(struct Method));
@@ -166,6 +172,7 @@ struct Method *addMethod(enum MethodFlags flag, ClassType cls, ClassType returnT
     m->refcount = 1;
     m->args = arguments;
     m->ast = NULL;
+    m->id = ID_UNASSIGNED;
     ArrayList_add(arr, m);
     return m;
   }
@@ -228,8 +235,8 @@ void giveClassId() {
   MyHash_iterate(&allClasses, &it);
   for (i = 0; i < n; i++) {
     ClassType cls = it.it->value;
-    cls->id = -1;
-    cls->maxId = -1;
+    cls->id = ID_UNASSIGNED;
+    cls->maxId = ID_UNASSIGNED;
     if (!cls->defined) {
       linenum = cls->linenum;
       semanticError("class %s is undefined\n", cls->name);
@@ -253,7 +260,7 @@ void giveClassId() {
   MyHash_iterate(&allClasses, &it);
   for (i = 0; i < n; i++) {
     ClassType cls = it.it->value;
-    if (cls->id == -1 && cls->defined) {
+    if (cls->id == ID_UNASSIGNED && cls->defined) {
       linenum = cls->linenum;
       semanticError("class %s has circular inheritance\n", cls->name);
     }
@@ -294,6 +301,37 @@ static void dfsProcessInheritance(struct Class *cls) {
     printf("  %s %s; // id=%d, from %s\n", f->type->name, f->name, f->id, f->thisClass->name);
   }
 
+  // add inherited methods
+  MyHash_iterate(&base->methods, &it);
+  while (it.it != NULL) {
+    char *name = it.it->key;
+    struct ArrayList *marr = it.it->value;
+    struct ArrayList *mymarr = MyHash_get(&cls->methods, name);
+    if (mymarr == NULL) {
+      mymarr = malloc(sizeof(struct ArrayList));
+      ArrayList_init(mymarr);
+      MyHash_set(&cls->methods, dupstr(name), mymarr);
+    }
+    for (i = 0; i < marr->size; i++) {
+      struct Method *m = ArrayList_get(marr, i), *mym;
+      size_t j, n = mymarr->size;
+      for (j = 0; j < n; j++) {
+        mym = ArrayList_get(mymarr, j);
+        if (isSameSignature(m->args, mym->args))
+          break;
+      }
+      printf("  method %s", name);
+      showSignature(m->args);
+      if (j < n) {
+        mym->id = m->id;
+        printf(" overrided\n");
+      }
+      else {
+        printf(" not overrided\n");
+      }
+    }
+    MyHash_next(&it);
+  }
   puts("}");
 
   size_t n = cls->subclasses->size;

@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include "MyHash.h"
 #include "ast.h"
+#define ID_UNASSIGNED 0
 
 struct Class {
   char *name;
@@ -53,6 +54,7 @@ ClassType createClass(const char *name, ClassType baseClass);
 void destroyClass(ClassType cls);
 
 void showSignature(struct ArgType args);
+bool isSameSignature(struct ArgType args1, struct ArgType args2);
 
 void addField(ClassType cls, ClassType type, const char *name);
 struct Method *addMethod(enum MethodFlags flag, ClassType cls, ClassType returnType, const char *name, struct ArgType arguments);

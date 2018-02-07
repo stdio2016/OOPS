@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
   yyin = f;
 
   // parse OOPS code
-  // and semantic check 1: redeclared variables/classes/methods
+  // semantic check 1: redeclared variables/classes/methods
   initSymTable();
   initClassTable();
   addBuiltinMethods();
@@ -44,6 +44,7 @@ int main(int argc, char *argv[]) {
   }
 
   // add inherited methods and fields
+  // semantic check 3: overriden method should have compatible return type
   if (n == 0) { // no semantic error
     processInheritance();
   }
