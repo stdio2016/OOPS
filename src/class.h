@@ -32,6 +32,7 @@ struct Method {
   struct Class *returnType;
   char *name;
   enum MethodFlags flag;
+  int linenum;
   int id;
   size_t refcount;
   struct ArgType args;

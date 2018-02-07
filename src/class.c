@@ -178,6 +178,7 @@ struct Method *addMethod(enum MethodFlags flag, ClassType cls, ClassType returnT
     m->args = arguments;
     m->ast = NULL;
     m->id = ID_UNASSIGNED;
+    m->linenum = linenum;
     ArrayList_add(arr, m);
     cls->methodCount++;
     return m;
@@ -343,6 +344,7 @@ static void inheritMethods(struct Class *cls) {
         if (j < n) { // overrided
           mym->id = m->id;
           if (!isKindOf(mym->returnType, m->returnType)) {
+            linenum = mym->linenum;
             semanticError("method ");
             printf("%s", name);
             showSignature(mym->args);
