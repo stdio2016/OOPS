@@ -7,6 +7,7 @@
 struct MyHash allClasses;
 ClassType *classTable;
 ClassType VoidClass;
+int classCount;
 
 extern int linenum; // defined in oops.lex
 
@@ -277,7 +278,7 @@ void giveClassId() {
     MyHash_next(&it);
   }
   // really give class id
-  dfsSubClasses(VoidClass, 0);
+  classCount = dfsSubClasses(VoidClass, 0);
 
   // find classes without id
   MyHash_iterate(&allClasses, &it);

@@ -2,6 +2,7 @@
 #include "symtable.h"
 #include "class.h"
 #include "builtin.h"
+#include "codegen.h"
 extern FILE* yyin;
 extern int yyparse();
 extern void yylex_destroy();
@@ -35,9 +36,9 @@ int main(int argc, char *argv[]) {
   yylex_destroy();
   destroySymTable();
 
+  extern int errorCount; // defined in errReport.h
   // semantic check 2: cyclic class inheritance and undefined classes
   if (n == 0) { // no syntax error
-    extern int errorCount; // defined in errReport.h
     // give each class an id
     giveClassId();
     n = errorCount;
@@ -47,6 +48,13 @@ int main(int argc, char *argv[]) {
   // semantic check 3: overriden method should have compatible return type
   if (n == 0) { // no semantic error
     processInheritance();
+    n = errorCount;
+  }
+
+  // generate bytecode
+  // semantic check 4: function overloading and type check
+  if (n == 0) {
+    compileAllClasses();
   }
 
   destroyClassTable();

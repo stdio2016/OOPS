@@ -201,21 +201,29 @@ expression:
 
 newExpr:
 	callExpr
-	| NEW newExpr { $$ = createExpr(Op_NEW, $2, NULL); }
+	| NEW name { $$ = createExpr(Op_NEW, createVarExpr($2), NULL); }
+	| NEW name '(' callArgs ')' {
+	    $$ = createFuncExpr(createVarExpr($2), $4.first);
+	    $$ = createExpr(Op_NEW, $$, NULL);
+	  }
 	;
 
 callExpr:
 	atom
-	| callExpr '(' callArgs ')' { // $1 cannot be a local variable node
-	    if ($1->op == Op_LOCAL) {
-	      int n = $1->varId;
-	      destroyExpr($1);
-	      char *name = dupstr(getLocalVarName(n));
-	      $1 = createVarExpr(name);
-	    }
-	    $$ = createFuncExpr($1, $3.first);
+	| THIS '(' callArgs ')' {
+	    $$ = createFuncExpr(createExpr(Op_THIS, NULL, NULL), $3.first);
+	  }
+	| SUPER '(' callArgs ')' {
+	    $$ = createFuncExpr(createExpr(Op_SUPER, NULL, NULL), $3.first);
+	  }
+	| name '(' callArgs ')' {
+	    $$ = createFuncExpr(createVarExpr($1), $3.first);
 	  }
 	| callExpr '.' name { $$ = createExpr(Op_DOT, $1, createVarExpr($3)); }
+	| callExpr '.' name '(' callArgs ')' {
+	    $$ = createExpr(Op_DOT, $1, createVarExpr($3));
+	    $$ = createFuncExpr($$, $5.first);
+	  }
 	;
 
 callArgs:

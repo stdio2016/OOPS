@@ -6,6 +6,9 @@
 #include "ast.h"
 #define ID_UNASSIGNED -1
 
+extern int classCount;
+extern struct Class **classTable;
+
 struct Class {
   char *name;
   struct Class *base;
