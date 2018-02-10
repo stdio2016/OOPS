@@ -20,5 +20,9 @@ struct ClassTypeAndIntPair{
 struct ClassTypeAndIntPair genStatement(struct Statement *s, int first, ClassType thisType);
 
 void genExpr(struct Expr *expr, ClassType thisType);
+void genTypeConvert(struct Class *from, struct Class *to);
+void genAssign(struct Expr *expr, ClassType thisType);
+void genVarExpr(struct Expr *expr, ClassType thisType);
+void genDotExpr(struct Expr *expr, ClassType thisType);
 
 #endif

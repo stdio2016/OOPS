@@ -85,18 +85,112 @@ struct ClassTypeAndIntPair genStatement(struct Statement *s, int first, ClassTyp
 
 void genExpr(struct Expr *expr, ClassType thisType) {
   switch (expr->op) {
-    case Op_ASSIGN: break;
+    case Op_ASSIGN: genAssign(expr, thisType); break;
     case Op_NEW: break;
-    case Op_DOT: break;
+    case Op_DOT: genDotExpr(expr, thisType); break;
     case Op_FUNC: break;
     case Op_LIT: printf("  str \"%s\"\n", expr->lit.str); break;
     case Op_THIS: printf("  this\n"); expr->type = thisType; break;
     case Op_SUPER: printf("  this\n"); expr->type = thisType; break;
-    case Op_VAR: break;
+    case Op_VAR: genVarExpr(expr, thisType); break;
     case Op_LOCAL: printf("  load %d\n", expr->varId); break;
     case Op_NULL: printf("  null\n"); break;
     default:
       printf("unknown expression type %d\n", expr->op);
       exit(EXIT_FAILURE);
+  }
+}
+
+void genTypeConvert(struct Class *from, struct Class *to) {
+  if (from == NULL) {
+    return;
+  }
+  if (isKindOf(from, to)) return; // no need to convert
+  if (isKindOf(to, from)) {
+    printf("  convert %d (class %s)\n", to->id, to->name);
+  }
+  else {
+    semanticError("cannot convert %s to %s\n", from->name, to->name);
+  }
+}
+
+void genAssign(struct Expr *expr, ClassType thisType) {
+  genExpr(expr->args->next, thisType);
+  /*
+  * assign can be:
+  * 1. obj DOT name = expr
+  * 2. LOCAL = expr
+  * 3. VAR = expr
+  */
+  if (expr->args->op == Op_DOT) {
+    struct Class *c;
+    if (expr->args->args->op == Op_THIS) c = thisType;
+    else if (expr->args->args->op == Op_SUPER) c = thisType->base;
+    else {
+      semanticError("only field variable of this or super is accessible\n");
+      return ;
+    }
+    char *name = expr->args->args->next->name;
+    struct Field *f = MyHash_get(&c->fields, name);
+    if (f == NULL) {
+      semanticError("undefined variable %s%s\n", name, c == thisType ? "" : " in super class");
+    }
+    else {
+      expr->type = f->type;
+      genTypeConvert(expr->args->next->type, expr->type);
+      printf("  putfield %d\n", f->id);
+    }
+  }
+  else if (expr->args->op == Op_LOCAL) {
+    expr->type = expr->args->type;
+    genTypeConvert(expr->args->next->type, expr->type);
+    printf("  store %d\n", expr->args->varId);
+  }
+  else if (expr->args->op == Op_VAR) {
+    struct Field *f = MyHash_get(&thisType->fields, expr->args->name);
+    if (f == NULL) {
+      semanticError("undefined variable: %s\n", expr->args->name);
+    }
+    else {
+      expr->type = f->type;
+      genTypeConvert(expr->args->next->type, expr->type);
+      printf("  putfield %d\n", f->id);
+    }
+  }
+  else {
+    semanticError("left hand side of \"=\" is not an lvalue\n");
+  }
+}
+
+void genVarExpr(struct Expr *expr, ClassType thisType) {
+  // can only be field variable
+  struct Field *f = MyHash_get(&thisType->fields, expr->name);
+  if (f == NULL) {
+    semanticError("undefined variable: %s\n", expr->name);
+  }
+  else {
+    expr->type = f->type;
+    printf("  getfield %d\n", f->id);
+  }
+}
+
+void genDotExpr(struct Expr *expr, ClassType thisType) {
+  // can only be field variable
+  struct Class *c;
+  if (expr->args->op == Op_THIS) c = thisType;
+  else if (expr->args->op == Op_SUPER) c = thisType->base;
+  else {
+    semanticError("only field variable of this or super is accessible\n");
+    return ;
+  }
+  char *name = expr->args->next->name;
+  struct Field *f = MyHash_get(&c->fields, name);
+  if (f == NULL) {
+    semanticError("undefined variable %s%s\n", name, c == thisType ? "" : " in super class");
+  }
+  else {
+    expr->type = f->type;
+    genTypeConvert(expr->args->next->type, expr->type);
+    printf("  getfield %d\n", f->id);
   }
 }

@@ -1,9 +1,11 @@
 class main {
 main(){
-{ this;}s=a;
+{ this.h=g=g;}s=a;
 }
 void some(){}
 void some2(){void s,a;return s=a;}
 void some3(){void s=this,a;}
 void some4(){void s,a=this;}
+main a,g,s,f;
+void h;
 }
