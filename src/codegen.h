@@ -24,5 +24,9 @@ void genTypeConvert(struct Class *from, struct Class *to);
 void genAssign(struct Expr *expr, ClassType thisType);
 void genVarExpr(struct Expr *expr, ClassType thisType);
 void genDotExpr(struct Expr *expr, ClassType thisType);
+void genNewExpr(struct Expr *expr, ClassType thisType);
+void genFuncExpr(struct Expr *expr, ClassType thisType);
+
+int getBestFitMethodId(struct Class *cls, const char *methodName, struct Expr *args);
 
 #endif

@@ -3,6 +3,7 @@
 #include <string.h>
 #include "codegen.h"
 #include "errReport.h"
+#include "ArrayList.h"
 
 void compileAllClasses(void) {
   int i;
@@ -86,9 +87,9 @@ struct ClassTypeAndIntPair genStatement(struct Statement *s, int first, ClassTyp
 void genExpr(struct Expr *expr, ClassType thisType) {
   switch (expr->op) {
     case Op_ASSIGN: genAssign(expr, thisType); break;
-    case Op_NEW: break;
+    case Op_NEW: genNewExpr(expr, thisType); break;
     case Op_DOT: genDotExpr(expr, thisType); break;
-    case Op_FUNC: break;
+    case Op_FUNC: genFuncExpr(expr, thisType); break;
     case Op_LIT: printf("  str \"%s\"\n", expr->lit.str); break;
     case Op_THIS: printf("  this\n"); expr->type = thisType; break;
     case Op_SUPER: printf("  this\n"); expr->type = thisType; break;
@@ -193,4 +194,129 @@ void genDotExpr(struct Expr *expr, ClassType thisType) {
     genTypeConvert(expr->args->next->type, expr->type);
     printf("  getfield %d\n", f->id);
   }
+}
+
+void genNewExpr(struct Expr *expr, ClassType thisType) {
+  /*
+  * new can be:
+  * 1. new name without args
+  * 2. new name(args)
+  */
+  struct Expr *p = expr;
+  char *name;
+  int mId;
+  if (p->args->op == Op_FUNC) {
+    p = p->args->args->next;
+    while (p != NULL) {
+      genExpr(p, thisType);
+      p = p->next;
+    }
+    name = expr->args->args->name;
+    p = expr->args->args->next;
+  }
+  else {
+    name = expr->args->name;
+    p = NULL;
+  }
+  struct Class *c = getClass(name);
+  mId = getBestFitMethodId(c, "<init>", p);
+  if (c->defined) {
+    printf("  new %d (class %s)\n", c->id, c->name);
+    printf("  dup\n");
+    printf("  call %d %d\n", c->id, mId);
+    expr->type = c;
+  }
+  else {
+    semanticError("class %s is undefined\n", c->name);
+  }
+}
+
+void genFuncExpr(struct Expr *expr, ClassType thisType) {
+  /*
+  * calls can be:
+  * 1. this ( args... ) -> constructor
+  * 2. super ( args... ) -> constructor
+  * 3. name ( args... ) -> method
+  * 4. obj . name ( args... ) -> method
+  */
+  struct Expr *p = expr;
+  if (p->args->op == Op_DOT) {
+    genExpr(p->args->args, thisType);
+  }
+  p = p->args->next;
+  while (p != NULL) {
+    genExpr(p, thisType);
+    p = p->next;
+  }
+  printf("  call ?\n");
+}
+
+int getBestFitMethodId(struct Class *cls, const char *name, struct Expr *args) {
+  struct Expr *p = args;
+  int argn = 0, i;
+  struct Class **types;
+  struct ArrayList *candidates = MyHash_get(&cls->methods, name);
+  if (candidates->size == 0) {
+    semanticError("method %s is undefined\n", name);
+    return -1;
+  }
+  while (p != NULL) {
+    argn++;
+    if (p->type == NULL) return -1; /* unknown type */
+    p = p->next;
+  }
+  types = malloc(sizeof(struct Class*) * argn);
+  for (i = 0; i < argn; i++) {
+    types[i] = getVoidClass();
+  }
+  /* get best fit argument type */
+  for (i = 0; i < candidates->size; i++) {
+    struct Method *m = ArrayList_get(candidates, i);
+    int j;
+    p = args;
+    if (m->args.arity != argn) continue;
+    for (j = 0; j < argn; j++) {
+      if (isKindOf(p->type, m->args.types[j])) {
+        if (isKindOf(m->args.types[j], types[j])) { /* better fit */
+          types[j] = m->args.types[j];
+        }
+      }
+      else break;
+      p = p->next;
+    }
+  }
+  /* get method with exactly the same signature */
+  for (i = 0; i < candidates->size; i++) {
+    struct Method *m = ArrayList_get(candidates, i);
+    int j;
+    if (m->args.arity != argn) continue;
+    for (j = 0; j < argn; j++) {
+      if (types[j] != m->args.types[j])
+        break;
+    }
+    if (j == argn) {
+      free(types);
+      return i; /* best fit found */
+    }
+  }
+  /* no best fit overloading exists -> list possible overloading */
+  free(types);
+  semanticError("call of overloaded method \"%s\" is ambiguous. candidates are:\n", name);
+  for (i = 0; i < candidates->size; i++) {
+    struct Method *m = ArrayList_get(candidates, i);
+    int j;
+    p = args;
+    if (m->args.arity != argn) continue;
+    for (j = 0; j < argn; j++) {
+      if (!isKindOf(p->type, m->args.types[j]))
+        break;
+      p = p->next;
+    }
+    if (j == argn) { /* print */
+      printf("%s %s", m->returnType->name, m->name);
+      showSignature(m->args);
+      printf(" in line %d\n", m->linenum);
+    }
+  }
+  return -1;
 }
