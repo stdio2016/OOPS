@@ -12,7 +12,7 @@
   #define BOLD_TEXT
 #endif
 
-extern int errorCount;
+extern int errorCount, linenum;
 void semanticError(const char *fmt, ...);
 void syntaxError(const char *fmt, ...);
 

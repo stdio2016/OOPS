@@ -4,6 +4,8 @@
 #include "ast.h"
 #include "class.h"
 
+extern int linenum; // defined in oops.lex
+
 char *dupstr(const char *str) {
   size_t n = strlen(str);
   char *nstr = malloc(n + 1);
@@ -45,6 +47,7 @@ struct Expr *createExpr(enum Operator op, struct Expr *arg1, struct Expr *arg2) 
   if (arg1 != NULL) {
     arg1->next = arg2;
   }
+  n->linenum = linenum;
   return n;
 }
 
@@ -54,6 +57,7 @@ struct Expr *createLitExpr(struct Constant lit) {
   n->type = getVoidClass();
   n->next = NULL;
   n->lit = lit;
+  n->linenum = linenum;
   return n;
 }
 
@@ -63,6 +67,7 @@ struct Expr *createVarExpr(char *name) {
   n->type = NULL;
   n->next = NULL;
   n->name = name;
+  n->linenum = linenum;
   return n;
 }
 
@@ -72,6 +77,7 @@ struct Expr *createLocalVarExpr(int id) {
   n->type = NULL;
   n->next = NULL;
   n->varId = id;
+  n->linenum = linenum;
   return n;
 }
 
@@ -82,6 +88,7 @@ struct Expr *createFuncExpr(struct Expr *name, struct Expr *args) {
   n->next = NULL;
   n->args = name;
   n->args->next = args;
+  n->linenum = linenum;
   return n;
 }
 

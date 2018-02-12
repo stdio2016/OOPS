@@ -46,7 +46,7 @@ struct ExprList {
 struct Expr {
   enum Operator op;
   ClassType type;
-  int lineno;
+  int linenum;
   union {
     struct Constant lit;
     char *name; // variable/class/method name

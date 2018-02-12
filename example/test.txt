@@ -6,7 +6,7 @@ class main
             new digit0(new digit1(new digit()))));
         d=d.incr();
         d.print();
-        d.incr.print();
+        d.incr().print();
     }
 }
 class digit

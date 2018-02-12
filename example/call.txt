@@ -3,7 +3,7 @@ class call {
   call() {
     good(a,b);
   }
-  good(void c,void d) {
+  void good(void c,void d) {
 
   }
 }

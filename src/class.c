@@ -268,6 +268,9 @@ void giveClassId() {
     if (cls->base != NULL) {
       ArrayList_add(cls->base->subclasses, cls);
     }
+    else if (cls != VoidClass) {
+      ArrayList_add(VoidClass->subclasses, cls);
+    }
     MyHash_next(&it);
   }
   // really give class id
@@ -277,7 +280,7 @@ void giveClassId() {
   MyHash_iterate(&allClasses, &it);
   for (i = 0; i < n; i++) {
     ClassType cls = it.it->value;
-    if (cls->id == ID_UNASSIGNED && cls->defined) {
+    if (cls->id == ID_UNASSIGNED && cls->defined && cls->base->defined) {
       linenum = cls->linenum;
       semanticError("class %s has circular inheritance\n", cls->name);
     }

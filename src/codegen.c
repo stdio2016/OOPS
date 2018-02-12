@@ -5,6 +5,8 @@
 #include "errReport.h"
 #include "ArrayList.h"
 
+extern int linenum;
+
 void compileAllClasses(void) {
   int i;
   for (i = 0; i < classCount; i++) {
@@ -38,11 +40,11 @@ void genMethod(struct Method *m) {
     else { // has statement
       if (status.type != NULL) {
         if (!isKindOf(status.type, m->returnType)) {
-          semanticError("return type mismatch, return type is ");
+          semanticError("return type mismatch, return type is \"");
           printf("%s", status.type->name);
-          printf(" but ");
+          printf("\" but \"");
           printf("%s", m->returnType->name);
-          printf(" is expected\n");
+          printf("\" is expected\n");
         }
       }
       printf("  return\n");
@@ -92,12 +94,13 @@ struct ClassTypeAndIntPair genStatement(struct Statement *s, int first, ClassTyp
 }
 
 void genExpr(struct Expr *expr, ClassType thisType) {
+  linenum = expr->linenum;
   switch (expr->op) {
     case Op_ASSIGN: genAssign(expr, thisType); break;
     case Op_NEW: genNewExpr(expr, thisType); break;
     case Op_DOT: genDotExpr(expr, thisType); break;
     case Op_FUNC: genFuncExpr(expr, thisType); break;
-    case Op_LIT: printf("  str \"%s\"\n", expr->lit.str); break;
+    case Op_LIT: printf("  str \"%s\"\n", expr->lit.str); expr->type = getVoidClass(); break;
     case Op_THIS: printf("  this\n"); expr->type = thisType; break;
     case Op_SUPER: printf("  this\n"); expr->type = thisType; break;
     case Op_VAR: genVarExpr(expr, thisType); break;
@@ -303,7 +306,7 @@ void genFuncExpr(struct Expr *expr, ClassType thisType) {
 
 struct Method *getBestFitMethod(struct Class *cls, const char *name, struct Expr *args) {
   struct Expr *p = args;
-  int argn = 0, i;
+  int argn = 0, i, fits = 0;
   struct Class **types;
   struct ArrayList *candidates;
   if (cls == NULL) return NULL;
@@ -329,6 +332,7 @@ struct Method *getBestFitMethod(struct Class *cls, const char *name, struct Expr
     if (m->args.arity != argn) continue;
     for (j = 0; j < argn; j++) {
       if (isKindOf(p->type, m->args.types[j])) {
+        fits++;
         if (isKindOf(m->args.types[j], types[j])) { /* better fit */
           types[j] = m->args.types[j];
         }
@@ -353,6 +357,10 @@ struct Method *getBestFitMethod(struct Class *cls, const char *name, struct Expr
   }
   /* no best fit overloading exists -> list possible overloading */
   free(types);
+  if (fits == 0) {
+    semanticError("no suitable overloaded method \"%s\" exists\n", name);
+    return NULL;
+  }
   semanticError("call of overloaded method \"%s\" is ambiguous. candidates are:\n", name);
   for (i = 0; i < candidates->size; i++) {
     struct Method *m = ArrayList_get(candidates, i);
