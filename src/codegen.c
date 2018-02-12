@@ -36,8 +36,15 @@ void genMethod(struct Method *m) {
       printf("  this\n  return\n");
     }
     else { // has statement
-      if (status.type == NULL) puts("  (type unknown)");
-      else printf("  (return type %s)\n", status.type->name);
+      if (status.type != NULL) {
+        if (!isKindOf(status.type, m->returnType)) {
+          semanticError("return type mismatch, return type is ");
+          printf("%s", status.type->name);
+          printf(" but ");
+          printf("%s", m->returnType->name);
+          printf(" is expected\n");
+        }
+      }
       printf("  return\n");
     }
   }

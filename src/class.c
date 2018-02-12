@@ -101,7 +101,6 @@ bool isKindOf(struct Class *some, struct Class *base) {
 }
 
 void addField(ClassType cls, ClassType type, const char *name) {
-  printf("  field %s\n", name);
   struct Field *f = MyHash_get(&cls->fields, name);
   if (f == NULL) {
     f = malloc(sizeof(*f));
@@ -142,12 +141,6 @@ bool isSameSignature(struct ArgType args1, struct ArgType args2) {
 }
 
 struct Method *addMethod(enum MethodFlags flag, ClassType cls, ClassType returnType, const char *name, struct ArgType arguments) {
-  printf("  ");
-  showMethodFlag(flag);
-  printf(" %s", name);
-  showSignature(arguments);
-  printf(": %s", returnType->name);
-  puts("");
   struct ArrayList *arr = MyHash_get(&cls->methods, name);
   if (arr == NULL) {
     arr = malloc(sizeof(struct ArrayList));
