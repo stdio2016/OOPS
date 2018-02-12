@@ -27,6 +27,6 @@ void genDotExpr(struct Expr *expr, ClassType thisType);
 void genNewExpr(struct Expr *expr, ClassType thisType);
 void genFuncExpr(struct Expr *expr, ClassType thisType);
 
-int getBestFitMethodId(struct Class *cls, const char *methodName, struct Expr *args);
+struct Method *getBestFitMethod(struct Class *cls, const char *methodName, struct Expr *args);
 
 #endif

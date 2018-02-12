@@ -204,7 +204,7 @@ void genNewExpr(struct Expr *expr, ClassType thisType) {
   */
   struct Expr *p = expr;
   char *name;
-  int mId;
+  struct Method *m;
   if (p->args->op == Op_FUNC) {
     p = p->args->args->next;
     while (p != NULL) {
@@ -219,11 +219,14 @@ void genNewExpr(struct Expr *expr, ClassType thisType) {
     p = NULL;
   }
   struct Class *c = getClass(name);
-  mId = getBestFitMethodId(c, "<init>", p);
+  m = getBestFitMethod(c, "<init>", p);
   if (c->defined) {
     printf("  new %d (class %s)\n", c->id, c->name);
-    printf("  dup\n");
-    printf("  call %d %d\n", c->id, mId);
+    if (m != NULL) {
+      printf("  dup\n");
+      printf("  callspecial %d %d\n", m->thisClass->id, m->id);
+      printf("  pop\n");
+    }
     expr->type = c;
   }
   else {
@@ -238,31 +241,73 @@ void genFuncExpr(struct Expr *expr, ClassType thisType) {
   * 2. super ( args... ) -> constructor
   * 3. name ( args... ) -> method
   * 4. obj . name ( args... ) -> method
+  * 5. super . name ( args... ) -> method
   */
-  struct Expr *p = expr;
-  if (p->args->op == Op_DOT) {
-    genExpr(p->args->args, thisType);
+  struct Expr *p;
+  struct Class *c;
+  char *name;
+  struct Method *m;
+  bool special = false;
+  switch (expr->args->op) {
+    case Op_DOT:
+      p = expr->args->args;
+      genExpr(expr->args->args, thisType);
+      if (p->op == Op_SUPER) {
+        c = thisType->base;
+        special = true;
+      }
+      else {
+        c = expr->args->args->type;
+      }
+      name = expr->args->args->next->name;
+      break;
+    case Op_THIS:
+      c = thisType;
+      name = "<init>";
+      special = true;
+      break;
+    case Op_SUPER:
+      c = thisType->base;
+      name = "<init>";
+      special = true;
+      break;
+    case Op_VAR:
+      c = thisType;
+      name = expr->args->name;
+      break;
+    default:
+      printf("unknown op %d in func expr\n", expr->args->op);
+      exit(EXIT_FAILURE);
   }
-  p = p->args->next;
+  p = expr->args->next;
   while (p != NULL) {
     genExpr(p, thisType);
     p = p->next;
   }
-  printf("  call ?\n");
+  m = getBestFitMethod(c, name, expr->args->next);
+  if (m != NULL) {
+    if (special)
+      printf("  callspacial %d %d\n", m->thisClass->id, m->id);
+    else
+      printf("  call %d\n", m->id);
+    expr->type = m->returnType;
+  }
 }
 
-int getBestFitMethodId(struct Class *cls, const char *name, struct Expr *args) {
+struct Method *getBestFitMethod(struct Class *cls, const char *name, struct Expr *args) {
   struct Expr *p = args;
   int argn = 0, i;
   struct Class **types;
-  struct ArrayList *candidates = MyHash_get(&cls->methods, name);
-  if (candidates->size == 0) {
-    semanticError("method %s is undefined\n", name);
-    return -1;
+  struct ArrayList *candidates;
+  if (cls == NULL) return NULL;
+  candidates = MyHash_get(&cls->methods, name);
+  if (candidates == NULL || candidates->size == 0) {
+    semanticError("class %s doesn't have method %s\n", cls->name, name);
+    return NULL;
   }
   while (p != NULL) {
     argn++;
-    if (p->type == NULL) return -1; /* unknown type */
+    if (p->type == NULL) return NULL; /* unknown type */
     p = p->next;
   }
   types = malloc(sizeof(struct Class*) * argn);
@@ -296,7 +341,7 @@ int getBestFitMethodId(struct Class *cls, const char *name, struct Expr *args) {
     }
     if (j == argn) {
       free(types);
-      return i; /* best fit found */
+      return m; /* best fit found */
     }
   }
   /* no best fit overloading exists -> list possible overloading */
@@ -318,5 +363,5 @@ int getBestFitMethodId(struct Class *cls, const char *name, struct Expr *args) {
       printf(" in line %d\n", m->linenum);
     }
   }
-  return -1;
+  return NULL;
 }

@@ -165,7 +165,7 @@ statement:
 	varDecls
 	| return
 	| block
-	| expression ';' { showExpr($1, 2); $$ = createStmt(Stmt_SIMPLE, $1); }
+	| expression ';' { $$ = createStmt(Stmt_SIMPLE, $1); }
 	;
 
 varDecls:
@@ -185,13 +185,12 @@ varDecl:
 	    var->type = currentType;
 	    struct Expr *as = createExpr(Op_ASSIGN, var, $3);
 	    $$ = createStmt(Stmt_SIMPLE, as);
-	    showExpr(as, 2);
 	    free($1);
 	  }
 	;
 
 return:
-	RETURN expression ';' { showExpr($2, 2); $$ = createStmt(Stmt_RETURN, $2); }
+	RETURN expression ';' { $$ = createStmt(Stmt_RETURN, $2); }
 	;
 
 expression:
