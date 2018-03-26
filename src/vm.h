@@ -22,4 +22,10 @@ enum VM_Bytecodes {
 
 void showBytecode(unsigned char *code);
 
+// stack structure
+// 1. this <- fp
+// 2. arguments
+// 3. locals
+// 4. stack pointer, frame pointer, return address
+// 5. stack <- sp
 #endif

@@ -32,6 +32,7 @@ static void genNewExpr(struct Expr *expr, ClassType thisType);
 static void genFuncExpr(struct Expr *expr, ClassType thisType);
 
 static struct StringBuffer CodeBuf;
+static int localVarCount;
 
 void compileAllClasses(void) {
   int i;
@@ -79,6 +80,7 @@ static void genMethod(struct Method *m) {
   showSignature(m->args);
   puts(" compiling");
   StrBuf_clear(&CodeBuf);
+  localVarCount = m->args.arity;
   if (m->ast != NULL) {
     struct ClassTypeAndIntPair status = genStatement(m->ast, 1, m->thisClass);
     if (status.n == 0) { // no statement
@@ -98,7 +100,9 @@ static void genMethod(struct Method *m) {
       EMIT(Instr_RETURN);
     }
     m->bytecode = malloc(CodeBuf.size);
+    m->localCount = localVarCount;
     memcpy(m->bytecode, CodeBuf.buf, CodeBuf.size);
+    printf(" locals %d\n", localVarCount);
     showBytecode(m->bytecode);
   }
 }
@@ -155,7 +159,12 @@ static void genExpr(struct Expr *expr, ClassType thisType) {
     case Op_THIS: EMIT(Instr_THIS); expr->type = thisType; break;
     case Op_SUPER: EMIT(Instr_THIS); expr->type = thisType; break;
     case Op_VAR: genVarExpr(expr, thisType); break;
-    case Op_LOCAL: emitOpWithOneArg(Instr_LOAD, expr->varId); break;
+    case Op_LOCAL:
+      emitOpWithOneArg(Instr_LOAD, expr->varId);
+      if (expr->varId >= localVarCount) {
+        localVarCount = expr->varId + 1;
+      }
+      break;
     case Op_NULL: EMIT(Instr_NULL); break;
     default:
       printf("unknown expression type %d\n", expr->op);
@@ -207,6 +216,9 @@ static void genAssign(struct Expr *expr, ClassType thisType) {
     expr->type = expr->args->type;
     genTypeConvert(expr->args->next->type, expr->type);
     emitOpWithOneArg(Instr_STORE, expr->args->varId);
+    if (expr->args->varId >= localVarCount) {
+      localVarCount = expr->args->varId + 1;
+    }
   }
   else if (expr->args->op == Op_VAR) {
     struct Field *f = MyHash_get(&thisType->fields, expr->args->name);

@@ -40,6 +40,7 @@ struct Method {
   size_t refcount;
   struct ArgType args;
   struct Statement *ast;
+  int localCount;
   union {
     void *(*builtinFun)(void *args);
     unsigned char *bytecode;

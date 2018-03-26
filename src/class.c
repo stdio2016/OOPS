@@ -174,6 +174,7 @@ struct Method *addMethod(enum MethodFlags flag, ClassType cls, ClassType returnT
     m->id = ID_UNASSIGNED;
     m->linenum = linenum;
     m->bytecode = NULL;
+    m->localCount = arguments.arity;
     ArrayList_add(arr, m);
     cls->methodCount++;
     return m;
