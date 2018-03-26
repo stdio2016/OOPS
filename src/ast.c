@@ -20,21 +20,21 @@ void destroyArgType(struct ArgType a) {
 struct Constant copyConst(struct Constant c) {
   struct Constant d = c;
   if (c.type == Type_STRING) {
-    d.str = dupstr(c.str);
+    d.strId = c.strId;
   }
   return d;
 }
 
 void destroyConst(struct Constant c) {
   if (c.type == Type_STRING) {
-    free(c.str);
+    //free(c.str);
   }
 }
 
 void showConst(struct Constant c) {
   int n;
   switch (c.type) {
-    case Type_STRING: n += printf("\"%s\"", c.str); break;
+    case Type_STRING: n += printf("%d", c.strId); break;
   }
 }
 

@@ -162,7 +162,7 @@ static void genExpr(struct Expr *expr, ClassType thisType) {
     case Op_NEW: genNewExpr(expr, thisType); break;
     case Op_DOT: genDotExpr(expr, thisType); break;
     case Op_FUNC: genFuncExpr(expr, thisType); break;
-    case Op_LIT: printf("  str \"%s\"\n", expr->lit.str); expr->type = getVoidClass(); break;
+    case Op_LIT: emitOpWithOneArg(Instr_STR, expr->lit.strId); expr->type = getVoidClass(); break;
     case Op_THIS: EMIT(Instr_THIS); expr->type = thisType; break;
     case Op_SUPER: EMIT(Instr_THIS); expr->type = thisType; break;
     case Op_VAR: genVarExpr(expr, thisType); break;

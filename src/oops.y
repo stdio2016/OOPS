@@ -14,6 +14,7 @@ ClassType thisClass;
 
 %union {
   char *str;
+  int strId;
   ClassType cls;
   struct ArgType argList;
   int scope;
@@ -26,7 +27,8 @@ ClassType thisClass;
 
 // keywords
 %token CLASS RETURN NEW THIS SUPER NUL
-%token<str> IDENTIFIER STRING
+%token<str> IDENTIFIER
+%token<strId> STRING
 %token ERROR
 
 %start program
@@ -248,7 +250,7 @@ atom:
 	| STRING {
 	    struct Constant a;
 	    a.type = Type_STRING;
-	    a.str = $1;
+	    a.strId = $1;
 	    $$ = createLitExpr(a);
 	  }
 	| '(' expression ')' { $$ = $2; }

@@ -34,7 +34,7 @@ enum TypeEnum {
 struct Constant {
   enum TypeEnum type;
   union {
-    char *str;
+    int strId;
   };
 };
 
@@ -74,6 +74,12 @@ struct Statement {
     struct Statement *stmt;
   };
   struct Statement *next;
+};
+
+struct SizedString {
+  size_t len;
+  char *str;
+  int id;
 };
 
 char *dupstr(const char *str);

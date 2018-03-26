@@ -207,6 +207,9 @@ void destroyMethod(struct Method *method) {
     free(method->name);
     destroyArgType(method->args);
     destroyStmt(method->ast);
+    if (!(method->flag & Method_BUILTIN)) {
+      free(method->bytecode);
+    }
     free(method);
   }
 }

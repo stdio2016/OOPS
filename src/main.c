@@ -7,6 +7,9 @@ extern FILE* yyin;
 extern int yyparse();
 extern void yylex_destroy();
 
+extern void initStrLitTable(void);
+extern void destroyStrLitTable(void);
+
 int main(int argc, char *argv[]) {
   if (argc < 2) {
     printf("Usage: %s <file>\n", argv[0]);
@@ -23,6 +26,7 @@ int main(int argc, char *argv[]) {
   // semantic check 1: redeclared variables/classes/methods
   initSymTable();
   initClassTable();
+  initStrLitTable();
   addBuiltinMethods();
   int n = yyparse();
   if (n == 0) {
@@ -58,5 +62,6 @@ int main(int argc, char *argv[]) {
   }
 
   destroyClassTable();
+  destroyStrLitTable();
   return n;
 }

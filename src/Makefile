@@ -11,7 +11,7 @@ $(TARGET): $(OBJECT)
 	$(CC) $^ -o $(TARGET) $(LIBS)
 
 # lex
-lex.yy.o: lex.yy.c y.tab.h errReport.h ast.h
+lex.yy.o: lex.yy.c y.tab.h errReport.h ast.h MyHash.h
 lex.yy.c: oops.lex
 	$(LEX) $<
 
@@ -30,7 +30,7 @@ ArrayList.o: ArrayList.c ArrayList.h
 builtin.o: builtin.c builtin.h class.h ast.h MyHash.h
 codegen.o: codegen.c codegen.h ast.h class.h MyHash.h errReport.h StringBuffer.h vm.h
 StringBuffer.o: StringBuffer.c StringBuffer.h
-vm.o: vm.c vm.h
+vm.o: vm.c vm.h class.h ast.h MyHash.h
 
 .PHONY: clean
 clean:
