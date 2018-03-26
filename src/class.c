@@ -173,6 +173,7 @@ struct Method *addMethod(enum MethodFlags flag, ClassType cls, ClassType returnT
     m->ast = NULL;
     m->id = ID_UNASSIGNED;
     m->linenum = linenum;
+    m->bytecode = NULL;
     ArrayList_add(arr, m);
     cls->methodCount++;
     return m;

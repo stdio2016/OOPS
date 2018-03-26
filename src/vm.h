@@ -3,6 +3,7 @@
 #define VM_INCLUDED
 
 enum VM_Bytecodes {
+  Instr_NOP,
   Instr_POP,
   Instr_DUP,
   Instr_CALL,
@@ -18,5 +19,7 @@ enum VM_Bytecodes {
   Instr_CONVERT,
   Instr_RETURN
 };
+
+void showBytecode(unsigned char *code);
 
 #endif

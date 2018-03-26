@@ -10,8 +10,8 @@
 
 extern int linenum;
 
-void genClassHeader(struct Class *c);
-void genMethod(struct Method *m);
+static void genClassHeader(struct Class *c);
+static void genMethod(struct Method *m);
 
 struct ClassTypeAndIntPair{
   ClassType type;
@@ -21,15 +21,15 @@ struct ClassTypeAndIntPair{
 // return 0: no value on stack
 // return 1: a value on stack
 // return -1: value returned
-struct ClassTypeAndIntPair genStatement(struct Statement *s, int first, ClassType thisType);
+static struct ClassTypeAndIntPair genStatement(struct Statement *s, int first, ClassType thisType);
 
-void genExpr(struct Expr *expr, ClassType thisType);
-void genTypeConvert(struct Class *from, struct Class *to);
-void genAssign(struct Expr *expr, ClassType thisType);
-void genVarExpr(struct Expr *expr, ClassType thisType);
-void genDotExpr(struct Expr *expr, ClassType thisType);
-void genNewExpr(struct Expr *expr, ClassType thisType);
-void genFuncExpr(struct Expr *expr, ClassType thisType);
+static void genExpr(struct Expr *expr, ClassType thisType);
+static void genTypeConvert(struct Class *from, struct Class *to);
+static void genAssign(struct Expr *expr, ClassType thisType);
+static void genVarExpr(struct Expr *expr, ClassType thisType);
+static void genDotExpr(struct Expr *expr, ClassType thisType);
+static void genNewExpr(struct Expr *expr, ClassType thisType);
+static void genFuncExpr(struct Expr *expr, ClassType thisType);
 
 static struct StringBuffer CodeBuf;
 
@@ -52,11 +52,29 @@ void compileAllClasses(void) {
   StrBuf_destroy(&CodeBuf);
 }
 
-void genClassHeader(struct Class *c) {
+static void emitOpWithOneArg(enum VM_Bytecodes op, unsigned num) {
+  unsigned char a[4];
+  a[0] = op;
+  a[1] = num & 0xff;
+  a[2] = num >> 8;
+  StrBuf_appendN(&CodeBuf, a, 3);
+}
+
+static void emitOpWithTwoArgs(enum VM_Bytecodes op, unsigned num, unsigned num2) {
+  unsigned char a[8];
+  a[0] = op;
+  a[1] = num & 0xff;
+  a[2] = num >> 8;
+  a[3] = num2 & 0xff;
+  a[4] = num2 >> 8;
+  StrBuf_appendN(&CodeBuf, a, 5);
+}
+
+static void genClassHeader(struct Class *c) {
 
 }
 
-void genMethod(struct Method *m) {
+static void genMethod(struct Method *m) {
   printf("%s %s::%s", m->returnType->name, m->thisClass->name, m->name);
   showSignature(m->args);
   puts(" compiling");
@@ -64,7 +82,6 @@ void genMethod(struct Method *m) {
   if (m->ast != NULL) {
     struct ClassTypeAndIntPair status = genStatement(m->ast, 1, m->thisClass);
     if (status.n == 0) { // no statement
-      printf("  this\n  return\n");
       EMIT(Instr_THIS);
       EMIT(Instr_RETURN);
     }
@@ -78,13 +95,15 @@ void genMethod(struct Method *m) {
           printf("\" is expected\n");
         }
       }
-      printf("  return\n");
       EMIT(Instr_RETURN);
     }
+    m->bytecode = malloc(CodeBuf.size);
+    memcpy(m->bytecode, CodeBuf.buf, CodeBuf.size);
+    showBytecode(m->bytecode);
   }
 }
 
-struct ClassTypeAndIntPair genStatement(struct Statement *s, int first, ClassType thisType) {
+static struct ClassTypeAndIntPair genStatement(struct Statement *s, int first, ClassType thisType) {
   struct ClassTypeAndIntPair a;
   int ret = 0;
   a.type = NULL;
@@ -102,7 +121,7 @@ struct ClassTypeAndIntPair genStatement(struct Statement *s, int first, ClassTyp
     }
     else if (s->type == Stmt_RETURN || s->type == Stmt_SIMPLE) {
       if (!first) {
-        printf("  pop\n");
+        EMIT(Instr_POP);
       }
       genExpr(s->expr, thisType);
       a.type = s->expr->type;
@@ -125,7 +144,7 @@ struct ClassTypeAndIntPair genStatement(struct Statement *s, int first, ClassTyp
   return a;
 }
 
-void genExpr(struct Expr *expr, ClassType thisType) {
+static void genExpr(struct Expr *expr, ClassType thisType) {
   linenum = expr->linenum;
   switch (expr->op) {
     case Op_ASSIGN: genAssign(expr, thisType); break;
@@ -133,31 +152,31 @@ void genExpr(struct Expr *expr, ClassType thisType) {
     case Op_DOT: genDotExpr(expr, thisType); break;
     case Op_FUNC: genFuncExpr(expr, thisType); break;
     case Op_LIT: printf("  str \"%s\"\n", expr->lit.str); expr->type = getVoidClass(); break;
-    case Op_THIS: printf("  this\n"); expr->type = thisType; break;
-    case Op_SUPER: printf("  this\n"); expr->type = thisType; break;
+    case Op_THIS: EMIT(Instr_THIS); expr->type = thisType; break;
+    case Op_SUPER: EMIT(Instr_THIS); expr->type = thisType; break;
     case Op_VAR: genVarExpr(expr, thisType); break;
-    case Op_LOCAL: printf("  load %d\n", expr->varId); break;
-    case Op_NULL: printf("  null\n"); break;
+    case Op_LOCAL: emitOpWithOneArg(Instr_LOAD, expr->varId); break;
+    case Op_NULL: EMIT(Instr_NULL); break;
     default:
       printf("unknown expression type %d\n", expr->op);
       exit(EXIT_FAILURE);
   }
 }
 
-void genTypeConvert(struct Class *from, struct Class *to) {
+static void genTypeConvert(struct Class *from, struct Class *to) {
   if (from == NULL) {
     return;
   }
   if (isKindOf(from, to)) return; // no need to convert
   if (isKindOf(to, from)) {
-    printf("  convert %d (class %s)\n", to->id, to->name);
+    emitOpWithOneArg(Instr_CONVERT, to->id);
   }
   else {
     semanticError("cannot convert %s to %s\n", from->name, to->name);
   }
 }
 
-void genAssign(struct Expr *expr, ClassType thisType) {
+static void genAssign(struct Expr *expr, ClassType thisType) {
   genExpr(expr->args->next, thisType);
   /*
   * assign can be:
@@ -181,13 +200,13 @@ void genAssign(struct Expr *expr, ClassType thisType) {
     else {
       expr->type = f->type;
       genTypeConvert(expr->args->next->type, expr->type);
-      printf("  putfield %d\n", f->id);
+      emitOpWithOneArg(Instr_PUTFIELD, f->id);
     }
   }
   else if (expr->args->op == Op_LOCAL) {
     expr->type = expr->args->type;
     genTypeConvert(expr->args->next->type, expr->type);
-    printf("  store %d\n", expr->args->varId);
+    emitOpWithOneArg(Instr_STORE, expr->args->varId);
   }
   else if (expr->args->op == Op_VAR) {
     struct Field *f = MyHash_get(&thisType->fields, expr->args->name);
@@ -197,7 +216,7 @@ void genAssign(struct Expr *expr, ClassType thisType) {
     else {
       expr->type = f->type;
       genTypeConvert(expr->args->next->type, expr->type);
-      printf("  putfield %d\n", f->id);
+      emitOpWithOneArg(Instr_PUTFIELD, f->id);
     }
   }
   else {
@@ -205,7 +224,7 @@ void genAssign(struct Expr *expr, ClassType thisType) {
   }
 }
 
-void genVarExpr(struct Expr *expr, ClassType thisType) {
+static void genVarExpr(struct Expr *expr, ClassType thisType) {
   // can only be field variable
   struct Field *f = MyHash_get(&thisType->fields, expr->name);
   if (f == NULL) {
@@ -213,11 +232,11 @@ void genVarExpr(struct Expr *expr, ClassType thisType) {
   }
   else {
     expr->type = f->type;
-    printf("  getfield %d\n", f->id);
+    emitOpWithOneArg(Instr_GETFIELD, f->id);
   }
 }
 
-void genDotExpr(struct Expr *expr, ClassType thisType) {
+static void genDotExpr(struct Expr *expr, ClassType thisType) {
   // can only be field variable
   struct Class *c;
   if (expr->args->op == Op_THIS) c = thisType;
@@ -234,11 +253,11 @@ void genDotExpr(struct Expr *expr, ClassType thisType) {
   else {
     expr->type = f->type;
     genTypeConvert(expr->args->next->type, expr->type);
-    printf("  getfield %d\n", f->id);
+    emitOpWithOneArg(Instr_GETFIELD, f->id);
   }
 }
 
-void genNewExpr(struct Expr *expr, ClassType thisType) {
+static void genNewExpr(struct Expr *expr, ClassType thisType) {
   /*
   * new can be:
   * 1. new name without args
@@ -263,11 +282,11 @@ void genNewExpr(struct Expr *expr, ClassType thisType) {
   struct Class *c = getClass(name);
   m = getBestFitMethod(c, "<init>", p);
   if (c->defined) {
-    printf("  new %d (class %s)\n", c->id, c->name);
+    emitOpWithOneArg(Instr_NEW, c->id);
     if (m != NULL) {
-      printf("  dup\n");
-      printf("  callspecial %d %d\n", m->thisClass->id, m->id);
-      printf("  pop\n");
+      EMIT(Instr_DUP);
+      emitOpWithTwoArgs(Instr_CALLSPECIAL, m->thisClass->id, m->id);
+      EMIT(Instr_POP);
     }
     expr->type = c;
   }
@@ -276,7 +295,7 @@ void genNewExpr(struct Expr *expr, ClassType thisType) {
   }
 }
 
-void genFuncExpr(struct Expr *expr, ClassType thisType) {
+static void genFuncExpr(struct Expr *expr, ClassType thisType) {
   /*
   * calls can be:
   * 1. this ( args... ) -> constructor
@@ -329,9 +348,9 @@ void genFuncExpr(struct Expr *expr, ClassType thisType) {
   m = getBestFitMethod(c, name, expr->args->next);
   if (m != NULL) {
     if (special)
-      printf("  callspacial %d %d\n", m->thisClass->id, m->id);
+      emitOpWithTwoArgs(Instr_CALLSPECIAL, m->thisClass->id, m->id);
     else
-      printf("  call %d\n", m->id);
+      emitOpWithOneArg(Instr_CALL, m->id);
     expr->type = m->returnType;
   }
 }
