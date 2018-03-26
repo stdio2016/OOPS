@@ -59,6 +59,7 @@ void initClassTable(void);
 void destroyClassTable(void);
 
 ClassType getVoidClass(void);
+ClassType getNullClass(void);
 ClassType getClass(const char *name);
 ClassType createClass(const char *name, ClassType baseClass);
 void destroyClass(ClassType cls);

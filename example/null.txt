@@ -1,0 +1,19 @@
+class A {
+  void go(A a, main b) {
+
+  }
+  A go(main a, void b) {
+    a = b;
+    return this;
+  }
+}
+class main {
+  main() {
+    A a = new A();
+    a.go(null, this);
+    null.puts(a);
+    a = null;
+    puts(null);
+    return null;
+  }
+}

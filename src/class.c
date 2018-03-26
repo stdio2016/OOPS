@@ -6,7 +6,7 @@
 
 struct MyHash allClasses;
 ClassType *classTable;
-ClassType VoidClass;
+ClassType VoidClass, NullClass;
 int classCount;
 
 extern int linenum; // defined in oops.lex
@@ -14,6 +14,7 @@ extern int linenum; // defined in oops.lex
 void initClassTable() {
   MyHash_init(&allClasses, MyHash_strcmp, MyHash_strhash);
   VoidClass = createClass("void", NULL);
+  NullClass = createClass("null", VoidClass);
 }
 
 void classTableDestructor(struct HashBucket *hb) {
@@ -28,6 +29,10 @@ void destroyClassTable() {
 
 ClassType getVoidClass() {
   return VoidClass;
+}
+
+ClassType getNullClass() {
+  return NullClass;
 }
 
 ClassType getClass(const char *name) {
@@ -97,6 +102,8 @@ void destroyClass(ClassType cls) {
 }
 
 bool isKindOf(struct Class *some, struct Class *base) {
+  if (some == NullClass) return true;
+  if (some == NULL || base == NULL) return false;
   return some->id >= base->id && some->id < base->maxId;
 }
 

@@ -84,6 +84,13 @@ static void genMethod(struct Method *m) {
   if (m->ast != NULL) {
     struct ClassTypeAndIntPair status = genStatement(m->ast, 1, m->thisClass);
     if (status.n == 0) { // no statement
+      if (!isKindOf(m->thisClass, m->returnType)) {
+        semanticError("return type mismatch, return type is \"");
+        printf("%s", m->thisClass->name);
+        printf("\" but \"");
+        printf("%s", m->returnType->name);
+        printf("\" is expected\n");
+      }
       EMIT(Instr_THIS);
       EMIT(Instr_RETURN);
     }
@@ -165,7 +172,7 @@ static void genExpr(struct Expr *expr, ClassType thisType) {
         localVarCount = expr->varId + 1;
       }
       break;
-    case Op_NULL: EMIT(Instr_NULL); break;
+    case Op_NULL: EMIT(Instr_NULL); expr->type = getNullClass(); break;
     default:
       printf("unknown expression type %d\n", expr->op);
       exit(EXIT_FAILURE);
@@ -394,14 +401,19 @@ struct Method *getBestFitMethod(struct Class *cls, const char *name, struct Expr
     p = args;
     if (m->args.arity != argn) continue;
     for (j = 0; j < argn; j++) {
-      if (isKindOf(p->type, m->args.types[j])) {
-        fits++;
+      if (!isKindOf(p->type, m->args.types[j])) break;
+      p = p->next;
+    }
+    if (j == argn) {
+      fits++;
+      for (j = 0; j < argn; j++) {
         if (isKindOf(m->args.types[j], types[j])) { /* better fit */
           types[j] = m->args.types[j];
         }
+        else if (!isKindOf(types[j], m->args.types[j])) { /* cannot determine which is more specific */
+          types[j] = NULL;
+        }
       }
-      else break;
-      p = p->next;
     }
   }
   /* get method with exactly the same signature */
