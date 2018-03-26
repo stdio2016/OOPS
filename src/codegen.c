@@ -4,11 +4,38 @@
 #include "codegen.h"
 #include "errReport.h"
 #include "ArrayList.h"
+#include "StringBuffer.h"
+#include "vm.h"
+#define EMIT(b1) StrBuf_appendChar(&CodeBuf, b1)
 
 extern int linenum;
 
+void genClassHeader(struct Class *c);
+void genMethod(struct Method *m);
+
+struct ClassTypeAndIntPair{
+  ClassType type;
+  int n;
+};
+// return type of the last statement
+// return 0: no value on stack
+// return 1: a value on stack
+// return -1: value returned
+struct ClassTypeAndIntPair genStatement(struct Statement *s, int first, ClassType thisType);
+
+void genExpr(struct Expr *expr, ClassType thisType);
+void genTypeConvert(struct Class *from, struct Class *to);
+void genAssign(struct Expr *expr, ClassType thisType);
+void genVarExpr(struct Expr *expr, ClassType thisType);
+void genDotExpr(struct Expr *expr, ClassType thisType);
+void genNewExpr(struct Expr *expr, ClassType thisType);
+void genFuncExpr(struct Expr *expr, ClassType thisType);
+
+static struct StringBuffer CodeBuf;
+
 void compileAllClasses(void) {
   int i;
+  StrBuf_init(&CodeBuf);
   for (i = 0; i < classCount; i++) {
     struct Class *c = classTable[i];
     if (c == getVoidClass()) continue;
@@ -22,6 +49,7 @@ void compileAllClasses(void) {
       }
     }
   }
+  StrBuf_destroy(&CodeBuf);
 }
 
 void genClassHeader(struct Class *c) {
@@ -32,10 +60,13 @@ void genMethod(struct Method *m) {
   printf("%s %s::%s", m->returnType->name, m->thisClass->name, m->name);
   showSignature(m->args);
   puts(" compiling");
+  StrBuf_clear(&CodeBuf);
   if (m->ast != NULL) {
     struct ClassTypeAndIntPair status = genStatement(m->ast, 1, m->thisClass);
     if (status.n == 0) { // no statement
       printf("  this\n  return\n");
+      EMIT(Instr_THIS);
+      EMIT(Instr_RETURN);
     }
     else { // has statement
       if (status.type != NULL) {
@@ -48,6 +79,7 @@ void genMethod(struct Method *m) {
         }
       }
       printf("  return\n");
+      EMIT(Instr_RETURN);
     }
   }
 }
