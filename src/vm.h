@@ -28,4 +28,24 @@ void showBytecode(unsigned char *code);
 // 3. locals <- fp
 // 4. stack pointer, frame pointer, return address
 // 5. stack <- sp
+
+union VM_Object {
+  int classId;
+  union VM_Object *field;
+};
+
+union VM_StackType {
+  union VM_Object *obj;
+  unsigned char *ip;
+  union VM_StackType *sp;
+};
+
+struct VM_State {
+  union VM_StackType *sp, *fp;
+  union VM_StackType *stack, *stackLimit;
+  union VM_Object *heap, *heapLimit;
+  union VM_Object *heapUsed;
+};
+
+void runProgram(struct VM_State *state);
 #endif

@@ -1,8 +1,10 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "symtable.h"
 #include "class.h"
 #include "builtin.h"
 #include "codegen.h"
+#include "vm.h"
 extern FILE* yyin;
 extern int yyparse();
 extern void yylex_destroy();
@@ -60,6 +62,15 @@ int main(int argc, char *argv[]) {
   if (n == 0) {
     compileAllClasses();
   }
+
+  struct VM_State state;
+  state.stack = malloc(sizeof(union VM_StackType) * 16000);
+  state.stackLimit = state.stack + 16000;
+  state.heap = malloc(sizeof(union VM_Object) * 16000);
+  state.heapLimit = state.heap + 16000;
+  runProgram(&state);
+  free(state.stack);
+  free(state.heap);
 
   destroyClassTable();
   destroyStrLitTable();
