@@ -68,10 +68,14 @@ void startProgram(struct VM_State *vm) {
 
 void runByteCode(struct VM_State *vm) {
   unsigned char *pc = vm->pc;
+  vm_stack_t *stack = vm->stack;
   vm_stack_t *sp = vm->sp;
   vm_stack_t *fp = vm->fp;
   vm_object_t *obj, *self = fp[-1].obj;
+  struct Class *cls;
+  struct Method *meth;
   while (1) {
+    //printf("sp %d fp %d\n", sp - stack, fp - stack);
     switch (*pc) {
       case Instr_NOP:
         break;
@@ -83,8 +87,27 @@ void runByteCode(struct VM_State *vm) {
         sp++;
         break;
       case Instr_CALL:
-        printf("call %d\n", pc[1] | pc[2]<<8);
-        pc += 2;
+        printf("call %d, %d\n", pc[1] | pc[2]<<8, pc[3] | pc[4]<<8);
+        vm->fp = fp;
+        vm->sp = sp;
+        fp = sp - (pc[1] | pc[2]<<8);
+        self = fp[-1].obj;
+        cls = classTable[self[-1].classId];
+        meth = cls->methodTable[pc[3] | pc[4]<<8];
+        pc += 4;
+        if (meth->flag & Method_BUILTIN) {
+          vm->sp = fp;
+          sp = fp;
+          sp[-1].obj = meth->builtinFun(vm, sp);
+          fp = vm->fp;
+        }
+        else {
+          sp = fp + meth->localCount + 3;
+          sp[-3].sp = vm->sp;
+          sp[-2].sp = vm->fp;
+          sp[-1].ip = pc;
+          pc = meth->bytecode;
+        }
         break;
       case Instr_STR:
         obj = allocateObject(getVoidClass(), vm);
@@ -94,7 +117,7 @@ void runByteCode(struct VM_State *vm) {
         pc += 2;
         break;
       case Instr_CALLSPECIAL:
-        printf("call %d, %d\n", pc[1] | pc[2]<<8, pc[3] | pc[4]<<8);
+        printf("callspecial %d, %d\n", pc[1] | pc[2]<<8, pc[3] | pc[4]<<8);
         pc += 4;
         break;
       case Instr_NEW:

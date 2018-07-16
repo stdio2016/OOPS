@@ -342,16 +342,19 @@ static void genFuncExpr(struct Expr *expr, ClassType thisType) {
       name = expr->args->args->next->name;
       break;
     case Op_THIS:
+      EMIT(Instr_THIS);
       c = thisType;
       name = "<init>";
       special = true;
       break;
     case Op_SUPER:
+      EMIT(Instr_THIS);
       c = thisType->base;
       name = "<init>";
       special = true;
       break;
     case Op_VAR:
+      EMIT(Instr_THIS);
       c = thisType;
       name = expr->args->name;
       break;
@@ -369,7 +372,7 @@ static void genFuncExpr(struct Expr *expr, ClassType thisType) {
     if (special)
       emitOpWithTwoArgs(Instr_CALLSPECIAL, m->thisClass->id, m->id);
     else
-      emitOpWithOneArg(Instr_CALL, m->id);
+      emitOpWithTwoArgs(Instr_CALL, m->args.arity, m->id);
     expr->type = m->returnType;
   }
 }

@@ -8,7 +8,7 @@ YACC = yacc
 LIBS = -lfl
 
 $(TARGET): $(OBJECT)
-	$(CC) $^ -o $(TARGET) $(LIBS)
+	$(CC) $^ -o $(TARGET) $(LIBS) $(CFLAGS)
 
 # lex
 lex.yy.o: lex.yy.c y.tab.h errReport.h ast.h MyHash.h

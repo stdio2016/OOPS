@@ -37,10 +37,13 @@ vm_object_t *builtin_feof(vm_state *vm, vm_stack_t *args) {
 
 vm_object_t *builtin_puts(vm_state *vm, vm_stack_t *args) {
   vm_object_t *obj = args[0].obj;
-  if (obj[-1].classId & VM_STRING_LIT) {
+  if (obj == NULL) {
+    printf("null");
+  }
+  else if (obj[-1].classId & VM_STRING_LIT) {
     // string object
-    extern struct SizedString *strLitTable;
-    struct SizedString *str = &strLitTable[obj[-1].classId & ~VM_STRING_LIT];
+    extern struct SizedString **strLitTable;
+    struct SizedString *str = strLitTable[obj[-1].classId & ~VM_STRING_LIT];
     fwrite(str->str, 1, str->len, stdout);
   }
   else {

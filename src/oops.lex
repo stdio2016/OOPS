@@ -5,9 +5,10 @@
 #include "y.tab.h"
 #include "errReport.h"
 #include "MyHash.h"
+#define IS_POWER_OF_2(x)  (((x)&(x)-1)==0)
 int linenum = 1;
 struct MyHash strLitHash;
-struct SizedString *strLitTable;
+struct SizedString **strLitTable;
 %}
 
 %x C_COMMENT
@@ -73,6 +74,10 @@ null { return NUL; }
   struct SizedString *g = MyHash_get(&strLitHash, ss);
   if (g == NULL) {
     yylval.strId = ss->id = strLitHash._size;
+    if (strLitHash._size >= 4 && IS_POWER_OF_2(strLitHash._size)) {
+      strLitTable = realloc(strLitTable, sizeof(strLitTable[0]) * strLitHash._size * 2);
+    }
+    strLitTable[strLitHash._size] = ss;
     MyHash_set(&strLitHash, ss, ss);
   }
   else {
@@ -135,6 +140,7 @@ static int strLitCmp(const void *s1, const void *s2) {
 
 void initStrLitTable(void) {
   MyHash_init(&strLitHash, strLitCmp, strLitHashFn);
+  strLitTable = malloc(sizeof(strLitTable[0]) * 4);
 }
 
 static void destroyStrLit(struct HashBucket *b) {
@@ -145,4 +151,5 @@ static void destroyStrLit(struct HashBucket *b) {
 
 void destroyStrLitTable(void) {
   MyHash_destroy(&strLitHash, destroyStrLit);
+  free(strLitTable);
 }
