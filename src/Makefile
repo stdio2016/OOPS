@@ -27,7 +27,7 @@ symtable.o: symtable.c symtable.h ast.h class.h MyHash.h errReport.h ArrayList.h
 main.o: main.c symtable.h class.h MyHash.h ast.h builtin.h codegen.h vm.h
 class.o: class.c class.h MyHash.h ast.h errReport.h ArrayList.h
 ArrayList.o: ArrayList.c ArrayList.h
-builtin.o: builtin.c builtin.h class.h ast.h MyHash.h
+builtin.o: builtin.c builtin.h class.h ast.h MyHash.h vm.h
 codegen.o: codegen.c codegen.h ast.h class.h MyHash.h errReport.h StringBuffer.h vm.h
 StringBuffer.o: StringBuffer.c StringBuffer.h
 vm.o: vm.c vm.h class.h ast.h MyHash.h ArrayList.h

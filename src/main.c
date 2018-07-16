@@ -61,16 +61,20 @@ int main(int argc, char *argv[]) {
   // semantic check 4: function overloading and type check
   if (n == 0) {
     compileAllClasses();
+    n = errorCount;
   }
 
-  struct VM_State state;
-  state.stack = malloc(sizeof(union VM_StackType) * 16000);
-  state.stackLimit = state.stack + 16000;
-  state.heap = malloc(sizeof(union VM_Object) * 16000);
-  state.heapLimit = state.heap + 16000;
-  runProgram(&state);
-  free(state.stack);
-  free(state.heap);
+  // run program!
+  if (n == 0) {
+    struct VM_State vm;
+    vm.stack = malloc(sizeof(union VM_StackType) * 16000);
+    vm.stackLimit = vm.stack + 16000;
+    vm.heap = malloc(sizeof(union VM_Object) * 16000);
+    vm.heapLimit = vm.heap + 16000;
+    startProgram(&vm);
+    free(vm.stack);
+    free(vm.heap);
+  }
 
   destroyClassTable();
   destroyStrLitTable();

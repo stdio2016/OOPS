@@ -30,6 +30,10 @@ enum MethodFlags {
   Method_BUILTIN = 2 // no need to compile
 };
 
+union VM_StackType;
+union VM_Object;
+struct VM_State;
+
 struct Method {
   struct Class *thisClass;
   struct Class *returnType;
@@ -42,7 +46,7 @@ struct Method {
   struct Statement *ast;
   int localCount;
   union {
-    void *(*builtinFun)(void *args);
+    union VM_Object *(*builtinFun)(struct VM_State *vm, union VM_StackType *args);
     unsigned char *bytecode;
   };
 };

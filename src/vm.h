@@ -24,8 +24,8 @@ void showBytecode(unsigned char *code);
 
 // stack structure
 // 1. this
-// 2. arguments
-// 3. locals <- fp
+// 2. arguments <- fp
+// 3. locals
 // 4. stack pointer, frame pointer, return address
 // 5. stack <- sp
 
@@ -33,6 +33,9 @@ union VM_Object {
   int classId;
   union VM_Object *field;
 };
+
+// flags for classId
+#define VM_STRING_LIT 0x40000
 
 union VM_StackType {
   union VM_Object *obj;
@@ -45,7 +48,13 @@ struct VM_State {
   union VM_StackType *stack, *stackLimit;
   union VM_Object *heap, *heapLimit;
   union VM_Object *heapUsed;
+  unsigned char *pc;
 };
 
-void runProgram(struct VM_State *state);
+typedef union VM_StackType vm_stack_t;
+typedef struct VM_State vm_state;
+typedef union VM_Object vm_object_t;
+
+void startProgram(struct VM_State *state);
+void runByteCode(struct VM_State *state);
 #endif
