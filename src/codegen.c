@@ -286,24 +286,28 @@ static void genNewExpr(struct Expr *expr, ClassType thisType) {
   char *name;
   struct Method *m;
   if (p->args->op == Op_FUNC) {
+    name = expr->args->args->name;
+  }
+  else {
+    name = expr->args->name;
+  }
+  struct Class *c = getClass(name);
+  emitOpWithOneArg(Instr_NEW, c->id);
+  EMIT(Instr_DUP);
+  if (p->args->op == Op_FUNC) {
     p = p->args->args->next;
     while (p != NULL) {
       genExpr(p, thisType);
       p = p->next;
     }
-    name = expr->args->args->name;
     p = expr->args->args->next;
   }
   else {
-    name = expr->args->name;
     p = NULL;
   }
-  struct Class *c = getClass(name);
   m = getBestFitMethod(c, "<init>", p);
   if (c->defined) {
-    emitOpWithOneArg(Instr_NEW, c->id);
     if (m != NULL) {
-      EMIT(Instr_DUP);
       emitOpWithTwoArgs(Instr_CALLSPECIAL, m->thisClass->id, m->id);
       EMIT(Instr_POP);
     }

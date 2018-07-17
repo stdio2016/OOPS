@@ -1,7 +1,7 @@
 class main
 {
     main(){
-        cout.puts("Hello World");
+        puts("Hello World");
         digit d=new digit1(new digit0(
             new digit0(new digit1(new digit()))));
         d=d.incr();
@@ -21,7 +21,7 @@ class digit
     }
     void print()
     {
-        cout.puts("0");
+        puts("0");
     }
     void print2()
     {
@@ -46,12 +46,12 @@ class digit0 : digit
     void print()
     {
         _nex.print2();
-        cout.puts("0");
+        puts("0");
     }
     void print2()
     {
         _nex.print2();
-        cout.puts("0");
+        puts("0");
     }
 }
 
@@ -73,11 +73,11 @@ class digit1 : digit
     void print()
     {
         _nex.print2();
-        cout.puts("1");
+        puts("1");
     }
     void print2()
     {
         _nex.print2();
-        cout.puts("1");
+        puts("1");
     }
 }

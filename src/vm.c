@@ -127,6 +127,7 @@ void runByteCode(struct VM_State *vm) {
           for (i = arity; i < meth->localCount; i++) {
             fp[i].obj = NULL;
           }
+          self = obj;
         }
         break;
       case Instr_STR:
@@ -137,8 +138,37 @@ void runByteCode(struct VM_State *vm) {
         pc += 2;
         break;
       case Instr_CALLSPECIAL:
-        printf("callspecial %d, %d\n", pc[1] | pc[2]<<8, pc[3] | pc[4]<<8);
-        pc += 4;
+        //printf("callspecial %d, %d\n", pc[1] | pc[2]<<8, pc[3] | pc[4]<<8);
+        vm->fp = fp;
+        vm->sp = sp;
+        cls = classTable[pc[1] | pc[2]<<8];
+        meth = cls->methodTable[pc[3] | pc[4]<<8];
+        arity = meth->args.arity;
+        obj = (sp-arity-1)->obj;
+        if (obj == NULL || meth->flag & Method_BUILTIN) {
+          sp = sp - arity;
+          vm->pc = pc;
+          if (obj == NULL) {
+            sp[-1].obj = NULL;
+          }
+          else {
+            sp[-1].obj = meth->builtinFun(vm, sp);
+          }
+          pc += 4;
+        }
+        else {
+          // prepare stack space
+          fp = sp - arity;
+          sp = fp + meth->localCount + 3;
+          sp[-3].sp = fp;
+          sp[-2].sp = vm->fp;
+          sp[-1].ip = pc + 4;
+          pc = meth->bytecode - 1;
+          for (i = arity; i < meth->localCount; i++) {
+            fp[i].obj = NULL;
+          }
+          self = obj;
+        }
         break;
       case Instr_NEW:
         obj = allocateObject(classTable[pc[1] | pc[2]<<8], vm);
@@ -195,6 +225,7 @@ void runByteCode(struct VM_State *vm) {
         sp = tmp;
         if (pc == 0) return; // finish
         sp[-1].obj = obj;
+        self = fp[-1].obj;
         break;
       default:
         printf("unknown instruction %02X\n", *pc);
