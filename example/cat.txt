@@ -1,0 +1,26 @@
+// it will output whatever you input
+class main{
+  main ctrl, end;
+  main firstbit;
+  main() {
+    ctrl = this;
+    firstbit = getchar();
+    end = feof();
+    end.stop();
+    ctrl.cat();
+  }
+  void copy() {
+    putchar(getchar());
+  }
+  void stop() {
+    ctrl = null;
+  }
+  void cat(){
+    putchar(firstbit);
+    copy(); copy(); copy(); copy(); copy(); copy(); copy();
+    firstbit = getchar();
+    end = feof();
+    end.stop();
+    ctrl.cat();
+  }
+}

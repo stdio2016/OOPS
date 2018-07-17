@@ -1,0 +1,167 @@
+// calculate Fibonacci number
+class Digit {
+  Digit next() { return this; }
+  Digit next(Digit r) { return r; }
+  Digit incr() { return new D1(this); }
+  Digit incr1(Digit r) { return new D1(r); }
+  Digit incr2(Digit r) { return new D2(r); }
+  Digit incr4(Digit r) { return new D4(r); }
+  Digit addD(Digit n, Digit r) { return n.next(r); }
+  Digit add(Digit n) { return n; }
+  void show() { puts(""); }
+  void print() {}
+}
+class D0: Digit {
+  Digit _nex;
+  D0(Digit d) { _nex = d; }
+  Digit next() { return _nex; }
+  Digit next(Digit r) { return new D0(r); }
+  Digit incr() { return new D1(_nex); }
+  void show() { puts("0"); }
+  Digit add(Digit n) {
+    Digit a = _nex.add(n.next());
+    return addD(n, a);
+  }
+  void print() {
+    _nex.print();
+    show();
+  }
+}
+class D1: D0 {
+  Digit next(Digit r) { return new D1(r); }
+  Digit incr() { return new D2(_nex); }
+  Digit incr1(Digit r) { return new D2(r); }
+  Digit incr2(Digit r) { return new D3(r); }
+  Digit incr4(Digit r) { return new D5(r); }
+  Digit addD(Digit n, Digit r) { return n.incr1(r); }
+  void show() { puts("1"); }
+}
+class D2: D0 {
+  Digit next(Digit r) { return new D2(r); }
+  Digit incr() { return new D3(_nex); }
+  Digit incr1(Digit r) { return new D3(r); }
+  Digit incr2(Digit r) { return new D4(r); }
+  Digit incr4(Digit r) { return new D6(r); }
+  Digit addD(Digit n, Digit r) { return n.incr2(r); }
+  void show() { puts("2"); }
+}
+class D3: D0 {
+  Digit next(Digit r) { return new D3(r); }
+  Digit incr() { return new D4(_nex); }
+  Digit incr1(Digit r) { return new D4(r); }
+  Digit incr2(Digit r) { return new D5(r); }
+  Digit incr4(Digit r) { return new D7(r); }
+  Digit addD(Digit n, Digit r) {
+    n = n.incr2(r);
+    return n.incr();
+  }
+  void show() { puts("3"); }
+}
+class D4: D0 {
+  Digit next(Digit r) { return new D4(r); }
+  Digit incr() { return new D5(_nex); }
+  Digit incr1(Digit r) { return new D5(r); }
+  Digit incr2(Digit r) { return new D6(r); }
+  Digit incr4(Digit r) { return new D8(r); }
+  Digit addD(Digit n, Digit r) { return n.incr4(r); }
+  void show() { puts("4"); }
+}
+class D5: D0 {
+  Digit next(Digit r) { return new D5(r); }
+  Digit incr() { return new D6(_nex); }
+  Digit incr1(Digit r) { return new D6(r); }
+  Digit incr2(Digit r) { return new D7(r); }
+  Digit incr4(Digit r) { return new D9(r); }
+  Digit addD(Digit n, Digit r) {
+    n = n.incr4(r);
+    return n.incr();
+  }
+  void show() { puts("5"); }
+}
+class D6: D0 {
+  Digit next(Digit r) { return new D6(r); }
+  Digit incr() { return new D7(_nex); }
+  Digit incr1(Digit r) { return new D7(r); }
+  Digit incr2(Digit r) { return new D8(r); }
+  Digit incr4(Digit r) { return new D0(r.incr()); }
+  Digit addD(Digit n, Digit r) {
+    n = n.incr4(r);
+    return n.incr2(n.next());
+  }
+  void show() { puts("6"); }
+}
+class D7: D0 {
+  Digit next(Digit r) { return new D7(r); }
+  Digit incr() { return new D8(_nex); }
+  Digit incr1(Digit r) { return new D8(r); }
+  Digit incr2(Digit r) { return new D9(r); }
+  Digit incr4(Digit r) { return new D1(r.incr()); }
+  Digit addD(Digit n, Digit r) {
+    n = n.incr4(r);
+    return n.incr2(n.next()).incr();
+  }
+  void show() { puts("7"); }
+}
+class D8: D0 {
+  Digit next(Digit r) { return new D8(r); }
+  Digit incr() { return new D9(_nex); }
+  Digit incr1(Digit r) { return new D9(r); }
+  Digit incr2(Digit r) { return new D0(r.incr()); }
+  Digit incr4(Digit r) { return new D2(r.incr()); }
+  Digit addD(Digit n, Digit r) {
+    n = n.incr4(r);
+    return n.incr4(n.next());
+  }
+  void show() { puts("8"); }
+}
+class D9: D0 {
+  Digit next(Digit r) { return new D9(r); }
+  Digit incr() { return new D0(_nex.incr()); }
+  Digit incr1(Digit r) { return new D0(r.incr()); }
+  Digit incr2(Digit r) { return new D1(r.incr()); }
+  Digit incr4(Digit r) { return new D3(r.incr()); }
+  Digit addD(Digit n, Digit r) {
+    n = n.incr4(r);
+    return n.incr4(n.next()).incr();
+  }
+  void show() { puts("9"); }
+}
+
+class main{
+  main ctrl, end;
+  main firstbit;
+  Digit a, b, n;
+  main() {
+    puts("Press enter to get next Fibonacci number");
+    ctrl = this;
+    a = new D1(new Digit);
+    b = new D0(new Digit);
+    n = new D0(new Digit);
+    firstbit = getchar();
+    end = feof();
+    end.stop();
+    ctrl.cat();
+    puts("\n");
+  }
+  void copy() {
+    getchar();
+  }
+  void stop() {
+    ctrl = null;
+  }
+  void cat(){
+    n = n.incr();
+    puts("F[");
+    n.print();
+    puts("] = ");
+    Digit c = a.add(b);
+    a = b;
+    b = c;
+    copy(); copy(); copy(); copy(); copy(); copy(); copy();
+    b.print();
+    firstbit = getchar();
+    end = feof();
+    end.stop();
+    ctrl.cat();
+  }
+}

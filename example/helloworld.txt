@@ -1,0 +1,29 @@
+// this program outputs hello world twice
+class main : v {
+  main(){
+    // method 1
+    puts("hello world\n");
+    // method 2
+    v l = this, o;
+    // l is one, and o is zero
+    char(o,l,l,o,l,o,o,o); // h
+    char(o,l,l,o,o,l,o,l); // e
+    char(o,l,l,o,l,l,o,o); // l
+    char(o,l,l,o,l,l,o,o); // l
+    char(o,l,l,o,l,l,l,l); // o
+    char(o,o,l,o,o,o,o,o); // space
+    char(o,l,l,l,o,l,l,l); // w
+    char(o,l,l,o,l,l,l,l); // o
+    char(o,l,l,l,o,o,l,o); // r
+    char(o,l,l,o,l,l,o,o); // l
+    char(o,l,l,o,o,l,o,o); // d
+    char(o,o,o,o,l,o,l,o); // enter
+  }
+  void char(v a, v b, v c, v d, v e, v f, v g, v h) {
+    putchar(a);putchar(b);putchar(c);putchar(d);
+    putchar(e);putchar(f);putchar(g);putchar(h);
+  }
+}
+class v {
+
+}
