@@ -1,0 +1,88 @@
+// 99 Bottles of Beer
+class Digit {
+  Digit next() { return null; }
+  Digit decr() { return this; }
+  Digit decr10() { return null; }
+  void show() { puts(""); }
+  void nomore(main x) {}
+  void print() {}
+}
+class D0: Digit {
+  Digit _nex;
+  D0(Digit d) { _nex = d; }
+  Digit next() { return _nex; }
+  Digit decr() { _nex.decr10(); }
+  void show() { puts("0"); }
+  void nomore(main x) { x.decrLoop(); }
+  Digit decr10() { return new D9(this.decr()); }
+  void print() {
+    _nex.print();
+    show();
+  }
+}
+class D1: D0 {
+  Digit decr() { return new D0(_nex); }
+  Digit decr10() { return new D9(null); }
+  void show() { puts("1"); }
+}
+class D2: D0 {
+  Digit decr() { return new D1(_nex); }
+  void show() { puts("2"); }
+}
+class D3: D0 {
+  Digit decr() { return new D2(_nex); }
+  void show() { puts("3"); }
+}
+class D4: D0 {
+  Digit decr() { return new D3(_nex); }
+  void show() { puts("4"); }
+}
+class D5: D0 {
+  Digit decr() { return new D4(_nex); }
+  void show() { puts("5"); }
+}
+class D6: D0 {
+  Digit decr() { return new D5(_nex); }
+  void show() { puts("6"); }
+}
+class D7: D0 {
+  Digit decr() { return new D6(_nex); }
+  void show() { puts("7"); }
+}
+class D8: D0 {
+  Digit decr() { return new D7(_nex); }
+  void show() { puts("8"); }
+}
+class D9: D0 {
+  Digit decr() { return new D8(_nex); }
+  void show() { puts("9"); }
+}
+
+class main{
+  Digit n, n_1, n_2;
+  main() {
+    puts("99 bottles of beer on the wall,\n");
+    puts("99 bottles of beer.\n");
+    puts("Take one down, pass it around,\n");
+    n = new D8(new D9(null));
+    n_1 = n.decr();
+    n_2 = n_1.decr();
+    decrLoop();
+    puts("1 bottle of beer on the wall.\n\n");
+    puts("1 bottle of beer on the wall,\n");
+    puts("1 bottle of beer.\n");
+    puts("Take one down, pass it around,\n");
+    puts("No bottles of beer on the wall.\n");
+  }
+
+  void decrLoop() {
+    n.print(); puts(" bottles of beer on the wall.\n\n");
+    n.print(); puts(" bottles of beer on the wall,\n");
+    n.print(); puts(" bottles of beer.\n");
+    puts("Take one down, pass it around,\n");
+    n = n_1;
+    n_1 = n_2;
+    n_2 = n_2.decr();
+    n_2.nomore(this);
+  }
+}
