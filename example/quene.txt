@@ -1,3 +1,5 @@
+// this file contains syntax error because it is a draft
+// I tried to write a quine in OOPS
 class main
 {
  d i,j;

@@ -25,3 +25,7 @@ class FlyingCar : RaceCar {
 }
 
 class Num {}
+
+class main{
+  main(){puts("hi\n");}
+}

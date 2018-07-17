@@ -1,3 +1,4 @@
+// builtin methods in OOPS
 class void {
   void putchar(void bit) {
 

@@ -15,3 +15,8 @@ class call2:call {
     a = this.getchar();
   }
 }
+class main{
+  main(){
+    new call();
+  }
+}
