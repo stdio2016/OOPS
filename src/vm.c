@@ -172,6 +172,10 @@ void runByteCode(struct VM_State *vm) {
         break;
       case Instr_NEW:
         obj = allocateObject(classTable[pc[1] | pc[2]<<8], vm);
+        if (obj == NULL) {
+          printf("Out of memory!\n");
+          return ;
+        }
         sp->obj = obj;
         sp++;
         pc += 2;

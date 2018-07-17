@@ -252,7 +252,9 @@ static int dfsSubClasses(ClassType base, int id) {
     id = dfsSubClasses(sub, id);
   }
   base->maxId = id;
+#ifdef DEBUG
   printf("class %s id is [%d , %d)\n", base->name, base->id, base->maxId);
+#endif
   return id;
 }
 
@@ -392,7 +394,9 @@ static void inheritMethods(struct Class *cls) {
 static void dfsProcessInheritance(struct Class *cls) {
   if (cls != VoidClass) inheritFields(cls);
   inheritMethods(cls);
+#ifdef DEBUG
   showClassInterfaces(cls);
+#endif
   size_t n = cls->subclasses->size, i;
   for (i = 0; i < n; i++) {
     ClassType sub = ArrayList_get(cls->subclasses, i);

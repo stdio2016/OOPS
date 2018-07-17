@@ -32,7 +32,9 @@ int main(int argc, char *argv[]) {
   addBuiltinMethods();
   int n = yyparse();
   if (n == 0) {
+#ifdef DEBUG
     printf("There is no syntax error! :-)\n");
+#endif
   }
   else {
     printf("There is syntax error ;-(\n");

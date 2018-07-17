@@ -76,9 +76,11 @@ static void genClassHeader(struct Class *c) {
 }
 
 static void genMethod(struct Method *m) {
+#ifdef DEBUG
   printf("%s %s::%s", m->returnType->name, m->thisClass->name, m->name);
   showSignature(m->args);
   puts(" compiling");
+#endif
   StrBuf_clear(&CodeBuf);
   localVarCount = m->args.arity;
   if (m->ast != NULL) {
@@ -109,8 +111,10 @@ static void genMethod(struct Method *m) {
     m->bytecode = malloc(CodeBuf.size);
     m->localCount = localVarCount;
     memcpy(m->bytecode, CodeBuf.buf, CodeBuf.size);
+#ifdef DEBUG
     printf(" locals %d\n", localVarCount);
     showBytecode(m->bytecode);
+#endif
   }
 }
 
