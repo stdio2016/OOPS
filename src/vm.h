@@ -36,6 +36,7 @@ union VM_Object {
 
 // flags for classId
 #define VM_STRING_LIT 0x40000
+#define VM_CLASS_MASK 0xFFFF
 
 union VM_StackType {
   union VM_Object *obj;

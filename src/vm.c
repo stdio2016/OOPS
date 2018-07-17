@@ -67,6 +67,7 @@ void startProgram(struct VM_State *vm) {
 }
 
 void runByteCode(struct VM_State *vm) {
+  struct Class *VoidClass = getVoidClass();
   unsigned char *pc = vm->pc;
   vm_stack_t *stack = vm->stack;
   vm_stack_t *sp = vm->sp;
@@ -74,8 +75,11 @@ void runByteCode(struct VM_State *vm) {
   vm_object_t *obj, *self = fp[-1].obj;
   struct Class *cls;
   struct Method *meth;
+  int arity;
+  int i;
+  vm_stack_t *tmp = vm->fp;
   while (1) {
-    //printf("sp %d fp %d\n", sp - stack, fp - stack);
+    //printf("%02X sp %d fp %d\n", *pc, sp - stack, fp - stack);
     switch (*pc) {
       case Instr_NOP:
         break;
@@ -87,26 +91,42 @@ void runByteCode(struct VM_State *vm) {
         sp++;
         break;
       case Instr_CALL:
-        printf("call %d, %d\n", pc[1] | pc[2]<<8, pc[3] | pc[4]<<8);
+        //printf("call %d, %d\n", pc[1] | pc[2]<<8, pc[3] | pc[4]<<8);
         vm->fp = fp;
         vm->sp = sp;
-        fp = sp - (pc[1] | pc[2]<<8);
-        self = fp[-1].obj;
-        cls = classTable[self[-1].classId];
-        meth = cls->methodTable[pc[3] | pc[4]<<8];
-        pc += 4;
-        if (meth->flag & Method_BUILTIN) {
-          vm->sp = fp;
-          sp = fp;
-          sp[-1].obj = meth->builtinFun(vm, sp);
-          fp = vm->fp;
+        arity = pc[1] | pc[2]<<8;
+        obj = (sp-arity-1)->obj;
+        if (obj != NULL) {
+          if (obj[-1].classId & VM_STRING_LIT) {
+            cls = VoidClass;
+          }
+          else {
+            cls = classTable[obj[-1].classId & VM_CLASS_MASK];
+          }
+          meth = cls->methodTable[pc[3] | pc[4]<<8];
+        }
+        if (obj == NULL || meth->flag & Method_BUILTIN) {
+          sp = sp - arity;
+          vm->pc = pc;
+          if (obj == NULL) {
+            sp[-1].obj = NULL;
+          }
+          else {
+            sp[-1].obj = meth->builtinFun(vm, sp);
+          }
+          pc += 4;
         }
         else {
+          // prepare stack space
+          fp = sp - arity;
           sp = fp + meth->localCount + 3;
-          sp[-3].sp = vm->sp;
+          sp[-3].sp = fp;
           sp[-2].sp = vm->fp;
-          sp[-1].ip = pc;
-          pc = meth->bytecode;
+          sp[-1].ip = pc + 4;
+          pc = meth->bytecode - 1;
+          for (i = arity; i < meth->localCount; i++) {
+            fp[i].obj = NULL;
+          }
         }
         break;
       case Instr_STR:
@@ -154,14 +174,28 @@ void runByteCode(struct VM_State *vm) {
         break;
       case Instr_CONVERT:
         obj = sp[-1].obj;
-        if (!isKindOf(classTable[obj->classId], classTable[pc[1] | pc[2]<<8])) {
-          sp[-1].obj = NULL;
+        if (obj != NULL) {
+          if (obj[-1].classId & VM_STRING_LIT) {
+            cls = VoidClass;
+          }
+          else {
+            cls = classTable[obj[-1].classId & VM_CLASS_MASK];
+          }
+          if (!isKindOf(cls, classTable[pc[1] | pc[2]<<8])) {
+            sp[-1].obj = NULL;
+          }
         }
         pc += 2;
         break;
       case Instr_RETURN:
-        puts("return");
-        return;
+        obj = sp[-1].obj;
+        tmp = fp;
+        fp = sp[-3].sp;
+        pc = sp[-2].ip;
+        sp = tmp;
+        if (pc == 0) return; // finish
+        sp[-1].obj = obj;
+        break;
       default:
         printf("unknown instruction %02X\n", *pc);
     }

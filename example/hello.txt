@@ -1,0 +1,72 @@
+class main{
+  main(){
+    void a,b,c,d,e,f,g,h;
+    puts("hello world");
+    a=getchar();
+    b=getchar();
+    c=getchar();
+    d=getchar();
+    e=getchar();
+    f=getchar();
+    g=getchar();
+    h=getchar();
+    puts("out:");
+    putchar(a);
+    putchar(b);
+    putchar(c);
+    putchar(d);
+    putchar(e);
+    putchar(f);
+    putchar(g);
+    putchar(h);
+    puts("\n");
+
+    a=getchar();
+    b=getchar();
+    c=getchar();
+    d=getchar();
+    e=getchar();
+    f=getchar();
+    g=getchar();
+    h=getchar();
+    puts("out:");
+    putchar(a);
+    putchar(b);
+    putchar(c);
+    putchar(d);
+    putchar(e);
+    putchar(f);
+    putchar(g);
+    putchar(h);
+    puts("\n");
+
+    a=getchar();
+    b=getchar();
+    c=getchar();
+    d=getchar();
+    e=getchar();
+    f=getchar();
+    g=getchar();
+    h=getchar();
+    puts("out:");
+    putchar(a);
+    putchar(b);
+    putchar(c);
+    putchar(d);
+    putchar(e);
+    putchar(f);
+    putchar(g);
+    putchar(h);
+    puts("\n");
+
+    putchar(null);
+    putchar(null);
+    putchar(this);
+    putchar(this);
+    putchar(null);
+    putchar(null);
+    putchar(null);
+    putchar(feof());
+    puts("\n");
+  }
+}

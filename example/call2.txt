@@ -1,0 +1,39 @@
+class main{
+  void e;
+  void b1,b2,b3,b4,b5,b6,b7,b8;
+  main(){
+    a();
+    b();
+    this.a();
+    e = this;
+    main f = e;
+    f.a();
+    puts("should not run b\n");
+    e = null;
+    f = e;
+    f.b();
+    putc("bye\n");
+  }
+  void a(){
+    puts("run a()\n");
+  }
+  void b(){
+    puts("run b()\n");
+  }
+  void g(){
+    return getchar();
+  }
+  void getc(){
+    b1=g();
+    b2=g();
+    b3=g();
+    b4=g();
+    b5=g();
+    b6=g();
+    b7=g();
+    b8=g();
+  }
+  void putc(void ss){
+    puts(ss);
+  }
+}
