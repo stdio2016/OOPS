@@ -26,7 +26,7 @@ void showBytecode(unsigned char *code);
 // 1. this
 // 2. arguments <- fp
 // 3. locals
-// 4. stack pointer, frame pointer, return address
+// 4. frame pointer 2, frame pointer, return address <- fp2
 // 5. stack <- sp
 
 union VM_Object {
@@ -36,6 +36,7 @@ union VM_Object {
 
 // flags for classId
 #define VM_STRING_LIT 0x40000
+#define VM_MARKED 0x10000
 #define VM_CLASS_MASK 0xFFFF
 
 union VM_StackType {
@@ -45,7 +46,7 @@ union VM_StackType {
 };
 
 struct VM_State {
-  union VM_StackType *sp, *fp;
+  union VM_StackType *sp, *fp, *fp2;
   union VM_StackType *stack, *stackLimit;
   union VM_Object *heap, *heapLimit;
   union VM_Object *heapUsed;

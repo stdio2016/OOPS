@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "vm.h"
 #include "class.h"
 #include "ArrayList.h"
@@ -11,13 +12,157 @@ void showBytecode(unsigned char *code) {
   puts(" 0E");
 }
 
+void garbageCollect(struct VM_State *vm) {
+  vm_stack_t *sp = vm->sp, *fp = vm->fp, *fp2 = vm->fp2;
+  vm_object_t h;
+  vm_object_t *head = &h+2, *tail = &h+2;
+  vm_object_t *tmp;
+  h.field = NULL;
+  // step 1: known references
+  // to collect main object, which is always at stack bottom
+  tmp = vm->stack[0].obj;
+  tmp[-1].classId += VM_MARKED;
+  tail[-2].field = tmp;
+  tmp[-2].field = NULL;
+  tail = tmp;
+  while (fp2 != NULL) {
+    // fp to fp2, fp2+3 to sp
+    vm_stack_t *p;
+    for (p = fp; p != fp2; p++) {
+      tmp = tail[-2].field;
+      if (p->obj != NULL && !(p->obj[-1].classId & VM_MARKED)) {
+        p->obj[-1].classId += VM_MARKED;
+        tail[-2].field = p->obj;
+        p->obj[-2].field = tmp;
+        tail = p->obj;
+      }
+    }
+    for (p = fp2+3; p != sp; p++) {
+      tmp = tail[-2].field;
+      if (p->obj != NULL && !(p->obj[-1].classId & VM_MARKED)) {
+        p->obj[-1].classId += VM_MARKED;
+        tail[-2].field = p->obj;
+        p->obj[-2].field = tmp;
+        tail = p->obj;
+      }
+    }
+    sp = fp;
+    fp = fp2[1].sp;
+    fp2 = fp2[0].sp;
+  }
+  // step 2: mark reachable
+  while (head != tail) {
+    head = head[-2].field;
+    if (head[-1].classId & VM_STRING_LIT) {
+      // string, no need to collect
+    }
+    else {
+      struct Class *cls = classTable[head[-1].classId & VM_CLASS_MASK];
+      int n = cls->fieldCount, i;
+      for (i = 0; i < n; i++) {
+        vm_object_t *p = head[i].field;
+        tmp = tail[-2].field;
+        if (p != NULL && !(p[-1].classId & VM_MARKED)) {
+          p[-1].classId += VM_MARKED;
+          tail[-2].field = p;
+          p[-2].field = tmp;
+          tail = p;
+        }
+      }
+    }
+  }
+  // step 3: compute new address
+  head = vm->heap;
+  vm_object_t *used = vm->heap;
+  while (head != vm->heapUsed) {
+    int n;
+    if (head[1].classId & VM_STRING_LIT) {
+      // string
+      n = 2;
+    }
+    else {
+      struct Class *cls = classTable[head[1].classId & VM_CLASS_MASK];
+      n = 2 + cls->fieldCount;
+    }
+    if (head[1].classId & VM_MARKED) {
+      head[0].field = used + 2; // remapped address
+      used += n;
+    }
+    head += n;
+  }
+  // step 4: update references on stack
+  sp = vm->sp; fp = vm->fp; fp2 = vm->fp2;
+  while (fp2 != NULL) {
+    // fp to fp2, fp2+3 to sp
+    vm_stack_t *p;
+    for (p = fp; p != fp2; p++) {
+      if (p->obj != NULL) {
+        p->obj = p->obj[-2].field;
+      }
+    }
+    for (p = fp2+3; p != sp; p++) {
+      if (p->obj != NULL) {
+        p->obj = p->obj[-2].field;
+      }
+    }
+    sp = fp;
+    fp = fp2[1].sp;
+    fp2 = fp2[0].sp;
+  }
+  // step 5: update references on heap
+  head = vm->heap;
+  while (head != vm->heapUsed) {
+    int n, i;
+    if (head[1].classId & VM_STRING_LIT) {
+      // string
+      n = 2;
+    }
+    else {
+      struct Class *cls = classTable[head[1].classId & VM_CLASS_MASK];
+      n = cls->fieldCount + 2;
+      if (head[1].classId & VM_MARKED) {
+        for (i = 0; i < cls->fieldCount; i++) {
+          if (head[i+2].field != NULL) {
+            head[i+2].field = head[i+2].field[-2].field;
+          }
+        }
+      }
+    }
+    head += n;
+  }
+  // step 6: move object
+  head = vm->heap;
+  while (head != vm->heapUsed) {
+    int n, i;
+    if (head[1].classId & VM_STRING_LIT) {
+      // string
+      n = 2;
+    }
+    else {
+      struct Class *cls = classTable[head[1].classId & VM_CLASS_MASK];
+      n = cls->fieldCount + 2;
+    }
+    if (head[1].classId & VM_MARKED) {
+      head[1].classId -= VM_MARKED;
+      memmove(head[0].field - 2, head, n * sizeof(*head));
+    }
+    head += n;
+  }
+  vm->heapUsed = used;
+  memset(used, 0, (vm->heapLimit - used) * sizeof(*head));
+}
+
 union VM_Object *allocateObject(struct Class *cls, struct VM_State *vm) {
   union VM_Object *o;
   int i;
   o = vm->heapUsed + 2;
   if (o + cls->fieldCount >= vm->heapLimit) {
-    // TODO garbage collection
-    return NULL;
+    garbageCollect(vm);
+    // try again
+    o = vm->heapUsed + 2;
+    if (o + cls->fieldCount >= vm->heapLimit) {
+      return NULL;
+    }
   }
   vm->heapUsed += cls->fieldCount + 2;
   o[-2].field = NULL;
@@ -58,10 +203,11 @@ void startProgram(struct VM_State *vm) {
   for (i = 0; i < entryMethod->localCount; i++) {
     vm->fp[i].obj = NULL;
   }
-  vm->sp = vm->fp + entryMethod->localCount + 3;
+  vm->fp2 = vm->fp + entryMethod->localCount;
+  vm->sp = vm->fp2 + 3;
   vm->sp[-3].sp = NULL;
   vm->sp[-2].sp = NULL;
-  vm->sp[-1].sp = NULL;
+  vm->sp[-1].ip = NULL;
   vm->pc = entryMethod->bytecode;
   runByteCode(vm);
 }
@@ -120,9 +266,10 @@ void runByteCode(struct VM_State *vm) {
           // prepare stack space
           fp = sp - arity;
           sp = fp + meth->localCount + 3;
-          sp[-3].sp = fp;
+          sp[-3].sp = vm->fp2;
           sp[-2].sp = vm->fp;
           sp[-1].ip = pc + 4;
+          vm->fp2 = fp + meth->localCount;
           pc = meth->bytecode - 1;
           for (i = arity; i < meth->localCount; i++) {
             fp[i].obj = NULL;
@@ -131,7 +278,14 @@ void runByteCode(struct VM_State *vm) {
         }
         break;
       case Instr_STR:
+        vm->sp = sp;
+        vm->fp = fp;
         obj = allocateObject(getVoidClass(), vm);
+        if (obj == NULL) {
+          printf("Out of memory!\n");
+          return ;
+        }
+        self = fp[-1].obj;
         obj[-1].classId = pc[1] | pc[2]<<8 | VM_STRING_LIT;
         sp->obj = obj;
         sp++;
@@ -160,9 +314,10 @@ void runByteCode(struct VM_State *vm) {
           // prepare stack space
           fp = sp - arity;
           sp = fp + meth->localCount + 3;
-          sp[-3].sp = fp;
+          sp[-3].sp = vm->fp2;
           sp[-2].sp = vm->fp;
           sp[-1].ip = pc + 4;
+          vm->fp2 = fp + meth->localCount;
           pc = meth->bytecode - 1;
           for (i = arity; i < meth->localCount; i++) {
             fp[i].obj = NULL;
@@ -171,11 +326,14 @@ void runByteCode(struct VM_State *vm) {
         }
         break;
       case Instr_NEW:
+        vm->sp = sp;
+        vm->fp = fp;
         obj = allocateObject(classTable[pc[1] | pc[2]<<8], vm);
         if (obj == NULL) {
           printf("Out of memory!\n");
           return ;
         }
+        self = fp[-1].obj;
         sp->obj = obj;
         sp++;
         pc += 2;
@@ -226,6 +384,7 @@ void runByteCode(struct VM_State *vm) {
         tmp = fp;
         fp = sp[-3].sp;
         pc = sp[-2].ip;
+        vm->fp2 = sp[-4].sp;
         sp = tmp;
         if (pc == 0) return; // finish
         sp[-1].obj = obj;

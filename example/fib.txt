@@ -157,6 +157,7 @@ class main{
     Digit c = a.add(b);
     a = b;
     b = c;
+    c = null;
     copy(); copy(); copy(); copy(); copy(); copy(); copy();
     b.print();
     firstbit = getchar();
