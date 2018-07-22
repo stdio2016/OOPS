@@ -173,11 +173,13 @@ union VM_Object *allocateObject(struct Class *cls, struct VM_State *vm) {
   return o;
 }
 
-void startProgram(struct VM_State *vm) {
+#define STACKCHECK() if (sp >= vm->stackLimit) return VM_RunResult_StackOverflow
+
+int startProgram(struct VM_State *vm) {
   struct Class *entryClass = getClass("main");
   if (entryClass == NULL || !entryClass->defined) {
     printf("entry class \"main\" not found\n");
-    return;
+    return -1;
   }
   struct ArrayList *cons = MyHash_get(&entryClass->methods, "<init>");
   struct Method *entryMethod;
@@ -190,11 +192,11 @@ void startProgram(struct VM_State *vm) {
   }
   if (i == cons->size) {
     printf("constructor main() not found\n");
-    return;
+    return -1;
   }
   if (entryMethod->flag & Method_BUILTIN) {
     printf("constructor main() not found\n");
-    return;
+    return -1;
   }
   // initialize stack
   vm->heapUsed = vm->heap;
@@ -205,14 +207,15 @@ void startProgram(struct VM_State *vm) {
   }
   vm->fp2 = vm->fp + entryMethod->localCount;
   vm->sp = vm->fp2 + 3;
+  if (vm->sp >= vm->stackLimit) return VM_RunResult_StackOverflow;
   vm->sp[-3].sp = NULL;
   vm->sp[-2].sp = NULL;
   vm->sp[-1].ip = NULL;
   vm->pc = entryMethod->bytecode;
-  runByteCode(vm);
+  return runByteCode(vm);
 }
 
-void runByteCode(struct VM_State *vm) {
+int runByteCode(struct VM_State *vm) {
   struct Class *VoidClass = getVoidClass();
   unsigned char *pc = vm->pc;
   vm_stack_t *stack = vm->stack;
@@ -233,6 +236,7 @@ void runByteCode(struct VM_State *vm) {
         sp--;
         break;
       case Instr_DUP:
+        STACKCHECK();
         sp->obj = sp[-1].obj;
         sp++;
         break;
@@ -266,6 +270,7 @@ void runByteCode(struct VM_State *vm) {
           // prepare stack space
           fp = sp - arity;
           sp = fp + meth->localCount + 3;
+          STACKCHECK();
           sp[-3].sp = vm->fp2;
           sp[-2].sp = vm->fp;
           sp[-1].ip = pc + 4;
@@ -281,12 +286,10 @@ void runByteCode(struct VM_State *vm) {
         vm->sp = sp;
         vm->fp = fp;
         obj = allocateObject(getVoidClass(), vm);
-        if (obj == NULL) {
-          printf("Out of memory!\n");
-          return ;
-        }
+        if (obj == NULL) return VM_RunResult_OOM;
         self = fp[-1].obj;
         obj[-1].classId = pc[1] | pc[2]<<8 | VM_STRING_LIT;
+        STACKCHECK();
         sp->obj = obj;
         sp++;
         pc += 2;
@@ -314,6 +317,7 @@ void runByteCode(struct VM_State *vm) {
           // prepare stack space
           fp = sp - arity;
           sp = fp + meth->localCount + 3;
+          STACKCHECK();
           sp[-3].sp = vm->fp2;
           sp[-2].sp = vm->fp;
           sp[-1].ip = pc + 4;
@@ -329,24 +333,25 @@ void runByteCode(struct VM_State *vm) {
         vm->sp = sp;
         vm->fp = fp;
         obj = allocateObject(classTable[pc[1] | pc[2]<<8], vm);
-        if (obj == NULL) {
-          printf("Out of memory!\n");
-          return ;
-        }
+        if (obj == NULL) return VM_RunResult_OOM;
         self = fp[-1].obj;
+        STACKCHECK();
         sp->obj = obj;
         sp++;
         pc += 2;
         break;
       case Instr_THIS:
+        STACKCHECK();
         sp->obj = self;
         sp++;
         break;
       case Instr_NULL:
+        STACKCHECK();
         sp->obj = NULL;
         sp++;
         break;
       case Instr_LOAD:
+        STACKCHECK();
         sp->obj = fp[pc[1] | pc[2]<<8].obj;
         sp++;
         pc += 2;
@@ -360,6 +365,7 @@ void runByteCode(struct VM_State *vm) {
         pc += 2;
         break;
       case Instr_GETFIELD:
+        STACKCHECK();
         sp->obj = self[pc[1] | pc[2]<<8].field;
         sp++;
         pc += 2;
@@ -386,12 +392,12 @@ void runByteCode(struct VM_State *vm) {
         pc = sp[-2].ip;
         vm->fp2 = sp[-4].sp;
         sp = tmp;
-        if (pc == 0) return; // finish
+        if (pc == 0) return VM_RunResult_Finish; // finish
         sp[-1].obj = obj;
         self = fp[-1].obj;
         break;
       default:
-        printf("unknown instruction %02X\n", *pc);
+        return VM_RunResult_InternalError;
     }
     pc++;
   }

@@ -149,6 +149,7 @@ class main{
   void stop() {
     ctrl = null;
   }
+  //void getchar(){}
   void cat(){
     n = n.incr();
     puts("F[");
@@ -160,6 +161,7 @@ class main{
     c = null;
     copy(); copy(); copy(); copy(); copy(); copy(); copy();
     b.print();
+    //puts("\n");
     firstbit = getchar();
     end = feof();
     end.stop();

@@ -20,6 +20,14 @@ enum VM_Bytecodes {
   Instr_RETURN
 };
 
+enum VM_RunResult {
+  VM_RunResult_Finish,
+  VM_RunResult_OOM,
+  VM_RunResult_StackOverflow,
+  VM_RunResult_Interrupt,
+  VM_RunResult_InternalError
+};
+
 void showBytecode(unsigned char *code);
 
 // stack structure
@@ -57,6 +65,6 @@ typedef union VM_StackType vm_stack_t;
 typedef struct VM_State vm_state;
 typedef union VM_Object vm_object_t;
 
-void startProgram(struct VM_State *state);
-void runByteCode(struct VM_State *state);
+int startProgram(struct VM_State *state);
+int runByteCode(struct VM_State *state);
 #endif

@@ -66,6 +66,9 @@ int main(int argc, char *argv[]) {
     n = errorCount;
   }
 
+// 323 * 8B to run 99bottles.txt
+// 8656 * 8B to run quine.txt
+
   // run program!
   if (n == 0) {
     struct VM_State vm;
@@ -73,7 +76,20 @@ int main(int argc, char *argv[]) {
     vm.stackLimit = vm.stack + 16000;
     vm.heap = malloc(sizeof(union VM_Object) * 16000);
     vm.heapLimit = vm.heap + 16000;
-    startProgram(&vm);
+    int r = startProgram(&vm);
+    if (r != VM_RunResult_Finish) {
+      printf("\n");
+      switch (r) {
+        case VM_RunResult_OOM:
+          fprintf(stderr, "Out of memory\n"); break;
+        case VM_RunResult_StackOverflow:
+          fprintf(stderr, "Stack overflow\n"); break;
+        case VM_RunResult_Interrupt:
+          fprintf(stderr, "Interrupt\n"); break;
+        case VM_RunResult_InternalError:
+          fprintf(stderr, "Internal error\n"); break;
+      }
+    }
     free(vm.stack);
     free(vm.heap);
   }
