@@ -1,7 +1,14 @@
 # OOPS
 OOPS! 這個語言好難。但這才是純物件導向語言
 
-OOPS是Object Orient Programming System的簡稱，裡面只有跟物件導向相關的指令，以及必要的標準輸入輸出指令
+OOPS 是 Object Orient Programming System 的簡稱，裡面只有跟物件導向相關的指令，以及必要的標準輸入輸出指令
+
+這裡提供一個 OOPS 語言的直譯器，讓你實際使用 OOPS
+
+## 版本紀錄
+* 2018/7/17：直譯器寫出來了
+* 2018/7/21：加入垃圾收集機制
+* 2018/7/22：加入堆疊檢查
 
 ## 特色
 OOPS 語言中只有一種資料型態，就是物件。OOPS 實現了物件導向的封裝、繼承、多型等特性
@@ -34,7 +41,11 @@ OOPS 支援多型，而且這大概是最常用到的物件導向特性，因為
 
 然後就會在資料夾裡面出現 `oops` 程式了！耶！
 
+要在 Windows 底下編譯這個程式，需要先安裝 Cygwin，可以只安裝裡面的 flex、bison 和 gcc。
+編譯輸入的指令要改成 `make CFLAGS="-L C:\cygwin64\lib"`，如果你安裝 Cygwin 的位置是 `C:\cygwin64`。
+還有，要記得把 Cygwin 加進 PATH 環境變數
+
 ## 執行方法
 用法： `./oops <source file>`
 
-執行 OOPS 程式碼（可惜目前只會顯示語法樹）
+執行 OOPS 程式碼
