@@ -48,4 +48,6 @@ OOPS 支援多型，而且這大概是最常用到的物件導向特性，因為
 ## 執行方法
 用法： `./oops <source file>`
 
+在 Windows 的命令列裡，請改成 `.\oops <source file>`
+
 執行 OOPS 程式碼

@@ -14,9 +14,9 @@ void showBytecode(unsigned char *code) {
 
 void garbageCollect(struct VM_State *vm) {
   vm_stack_t *sp = vm->sp, *fp = vm->fp, *fp2 = vm->fp2;
-  vm_object_t h;
-  vm_object_t *head = &h+2, *tail = &h+2;
-  vm_object_t *tmp;
+  vm_object h;
+  vm_object *head = &h+2, *tail = &h+2;
+  vm_object *tmp;
   h.field = NULL;
   // step 1: known references
   // to collect main object, which is always at stack bottom
@@ -60,7 +60,7 @@ void garbageCollect(struct VM_State *vm) {
       struct Class *cls = classTable[head[-1].classId & VM_CLASS_MASK];
       int n = cls->fieldCount, i;
       for (i = 0; i < n; i++) {
-        vm_object_t *p = head[i].field;
+        vm_object *p = head[i].field;
         tmp = tail[-2].field;
         if (p != NULL && !(p[-1].classId & VM_MARKED)) {
           p[-1].classId += VM_MARKED;
@@ -73,7 +73,7 @@ void garbageCollect(struct VM_State *vm) {
   }
   // step 3: compute new address
   head = vm->heap;
-  vm_object_t *used = vm->heap;
+  vm_object *used = vm->heap;
   while (head != vm->heapUsed) {
     int n;
     if (head[1].classId & VM_STRING_LIT) {
@@ -221,7 +221,7 @@ int runByteCode(struct VM_State *vm) {
   vm_stack_t *stack = vm->stack;
   vm_stack_t *sp = vm->sp;
   vm_stack_t *fp = vm->fp;
-  vm_object_t *obj, *self = fp[-1].obj;
+  vm_object *obj, *self = fp[-1].obj;
   struct Class *cls;
   struct Method *meth;
   int arity;

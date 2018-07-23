@@ -1,0 +1,35 @@
+/*
+  performance test code
+  will run "call", "getfield", and "pop" instruction for about 10^9 times
+  
+  performance on Windows:
+    MSVC 2015, release mode:
+      6.78s, 6.83s, 6.62s
+    gcc 4.9.2 (tdm-1), -O1 flag:
+      7.41s, 7.32s, 7.42s
+    gcc 7.3.0 (GCC), -O1 flag:
+      6.93s, 6.87s, 6.65s
+*/
+class main{
+  main(){
+    g a = new g(new g(new g(new g(new g(new g(new g(new g(new g))))))));
+    a.g();
+  }
+}
+class g{
+  g t;
+  g(g t) { this.t = t; }
+  void g() {
+    //puts("HAHA\n");
+    t.g();
+    t.g();
+    t.g();
+    t.g();
+    t.g();
+    t.g();
+    t.g();
+    t.g();
+    t.g();
+    t.g();
+  }
+}

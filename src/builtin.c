@@ -14,14 +14,14 @@ static struct ArgType createArgType(int argc, ClassType *args) {
   return a;
 }
 
-vm_object_t *builtin_constructor(vm_state *vm, vm_stack_t *args) {
+vm_object *builtin_constructor(vm_state *vm, vm_stack_t *args) {
   // return itself
   return args[-1].obj;
 }
 
 static int lastGetChar, getBits = 0;
 
-vm_object_t *builtin_getchar(vm_state *vm, vm_stack_t *args) {
+vm_object *builtin_getchar(vm_state *vm, vm_stack_t *args) {
   if (getBits == 0) {
     getBits = 8;
     lastGetChar = getchar();
@@ -31,12 +31,12 @@ vm_object_t *builtin_getchar(vm_state *vm, vm_stack_t *args) {
   return (lastGetChar>>getBits & 1) ? args[-1].obj : NULL;
 }
 
-vm_object_t *builtin_feof(vm_state *vm, vm_stack_t *args) {
+vm_object *builtin_feof(vm_state *vm, vm_stack_t *args) {
   return feof(stdin) ? args[-1].obj : NULL;
 }
 
-vm_object_t *builtin_puts(vm_state *vm, vm_stack_t *args) {
-  vm_object_t *obj = args[0].obj;
+vm_object *builtin_puts(vm_state *vm, vm_stack_t *args) {
+  vm_object *obj = args[0].obj;
   if (obj == NULL) {
     printf("null");
   }
@@ -54,7 +54,7 @@ vm_object_t *builtin_puts(vm_state *vm, vm_stack_t *args) {
 
 static int lastPutChar = 0, putBits = 0;
 
-vm_object_t *builtin_putchar(vm_state *vm, vm_stack_t *args) {
+vm_object *builtin_putchar(vm_state *vm, vm_stack_t *args) {
   if (args[0].obj == NULL) {
     lastPutChar = lastPutChar<<1;
   }

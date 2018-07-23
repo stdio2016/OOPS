@@ -63,7 +63,7 @@ struct VM_State {
 
 typedef union VM_StackType vm_stack_t;
 typedef struct VM_State vm_state;
-typedef union VM_Object vm_object_t;
+typedef union VM_Object vm_object;
 
 int startProgram(struct VM_State *state);
 int runByteCode(struct VM_State *state);
