@@ -1,0 +1,189 @@
+class V{
+V p(V a){putchar(a);this;}
+V t(void a){puts(a);this;}
+}
+class main:V{
+L s,r;
+V u;
+X a,b,c,d,
+e,f,g,h,
+i,j,k,l,
+m,n,o,p;
+H H(V a,V b,V c,V d){
+new H(a,b,c,d);
+}
+main(){
+s=r=new L;
+a=H(u,u,u,s);
+b=H(u,u,s,u);
+c=H(u,u,s,s);
+d=H(u,s,u,u);
+e=H(u,s,u,s);
+f=H(u,s,s,u);
+g=H(u,s,s,s);
+h=H(s,u,u,u);
+i=H(s,u,u,s);
+j=H(s,u,s,u);
+k=H(s,u,s,s);
+l=H(s,s,u,u);
+m=H(s,s,u,s);
+n=H(s,s,s,u);
+o=H(s,s,s,s);
+p=new X;
+f(c);f(l);f(a);g(c);g(c);s();e(f);g(k);n();
+e(f);s();g(p);b(h);e(f);s();f(a);b(i);g(k);g(p);g(e);g(d);f(c);f(h);f(a);g(b);b(h);f(a);b(i);c(k);g(d);f(h);f(i);g(c);c(k);g(m);n();
+e(f);s();g(d);b(h);g(f);f(o);f(i);f(d);s();f(a);b(i);g(k);g(p);g(e);g(d);g(c);b(h);f(a);b(i);c(k);g(d);f(h);f(i);g(c);c(k);g(m);n();
+g(m);n();
+f(c);f(l);f(a);g(c);g(c);s();f(m);f(a);f(i);f(n);c(j);e(f);g(k);n();
+d(l);s();g(c);b(l);g(b);c(k);n();
+e(f);s();g(e);c(k);n();
+e(h);s();f(a);b(l);f(b);b(l);f(c);b(l);f(d);b(l);n();
+f(e);b(l);f(f);b(l);f(g);b(l);f(h);b(l);n();
+f(i);b(l);f(j);b(l);f(k);b(l);f(l);b(l);n();
+f(m);b(l);f(n);b(l);f(o);b(l);g(p);c(k);n();
+d(h);s();d(h);b(h);e(f);s();f(a);b(l);e(f);s();f(b);b(l);e(f);s();f(c);b(l);e(f);s();f(d);b(i);g(k);n();
+f(n);f(e);g(g);s();d(h);b(h);f(a);b(l);f(b);b(l);f(c);b(l);f(d);b(i);c(k);n();
+g(m);n();
+f(m);f(a);f(i);f(n);b(h);b(i);g(k);n();
+g(c);c(m);g(b);c(m);f(n);f(e);g(g);s();d(l);c(k);n();
+f(a);c(m);d(h);b(h);g(e);b(l);g(e);b(l);g(e);b(l);g(c);b(i);c(k);n();
+f(b);c(m);d(h);b(h);g(e);b(l);g(e);b(l);g(c);b(l);g(e);b(i);c(k);n();
+f(c);c(m);d(h);b(h);g(e);b(l);g(e);b(l);g(c);b(l);g(c);b(i);c(k);n();
+f(d);c(m);d(h);b(h);g(e);b(l);g(c);b(l);g(e);b(l);g(e);b(i);c(k);n();
+f(e);c(m);d(h);b(h);g(e);b(l);g(c);b(l);g(e);b(l);g(c);b(i);c(k);n();
+f(f);c(m);d(h);b(h);g(e);b(l);g(c);b(l);g(c);b(l);g(e);b(i);c(k);n();
+f(g);c(m);d(h);b(h);g(e);b(l);g(c);b(l);g(c);b(l);g(c);b(i);c(k);n();
+f(h);c(m);d(h);b(h);g(c);b(l);g(e);b(l);g(e);b(l);g(e);b(i);c(k);n();
+f(i);c(m);d(h);b(h);g(c);b(l);g(e);b(l);g(e);b(l);g(c);b(i);c(k);n();
+f(j);c(m);d(h);b(h);g(c);b(l);g(e);b(l);g(c);b(l);g(e);b(i);c(k);n();
+f(k);c(m);d(h);b(h);g(c);b(l);g(e);b(l);g(c);b(l);g(c);b(i);c(k);n();
+f(l);c(m);d(h);b(h);g(c);b(l);g(c);b(l);g(e);b(l);g(e);b(i);c(k);n();
+f(m);c(m);d(h);b(h);g(c);b(l);g(c);b(l);g(e);b(l);g(c);b(i);c(k);n();
+f(n);c(m);d(h);b(h);g(c);b(l);g(c);b(l);g(c);b(l);g(e);b(i);c(k);n();
+f(o);c(m);d(h);b(h);g(c);b(l);g(c);b(l);g(c);b(l);g(c);b(i);c(k);n();
+g(p);c(m);f(n);f(e);g(g);s();e(h);c(k);n();
+w(new B);
+g(b);b(n);g(p);b(h);g(b);b(i);c(k);n();
+g(m);n();
+e(f);s();f(a);b(h);e(h);s();g(h);b(i);g(k);g(g);b(h);f(a);b(l);g(h);b(i);c(k);g(m);n();
+e(f);s();f(b);b(h);e(h);s();g(h);b(i);g(k);g(g);b(h);f(b);b(l);g(h);b(i);c(k);g(m);n();
+e(f);s();f(c);b(h);e(h);s();g(h);b(i);g(k);g(g);b(h);f(c);b(l);g(h);b(i);c(k);g(m);n();
+e(f);s();f(d);b(h);e(h);s();g(h);b(i);g(k);g(g);b(h);f(d);b(l);g(h);b(i);c(k);g(m);n();
+e(f);s();f(e);b(h);e(h);s();g(h);b(i);g(k);g(g);b(h);f(e);b(l);g(h);b(i);c(k);g(m);n();
+e(f);s();f(f);b(h);e(h);s();g(h);b(i);g(k);g(g);b(h);f(f);b(l);g(h);b(i);c(k);g(m);n();
+e(f);s();f(g);b(h);e(h);s();g(h);b(i);g(k);g(g);b(h);f(g);b(l);g(h);b(i);c(k);g(m);n();
+e(f);s();f(h);b(h);e(h);s();g(h);b(i);g(k);g(g);b(h);f(h);b(l);g(h);b(i);c(k);g(m);n();
+e(f);s();f(i);b(h);e(h);s();g(h);b(i);g(k);g(g);b(h);f(i);b(l);g(h);b(i);c(k);g(m);n();
+e(f);s();f(j);b(h);e(h);s();g(h);b(i);g(k);g(g);b(h);f(j);b(l);g(h);b(i);c(k);g(m);n();
+e(f);s();f(k);b(h);e(h);s();g(h);b(i);g(k);g(g);b(h);f(k);b(l);g(h);b(i);c(k);g(m);n();
+e(f);s();f(l);b(h);e(h);s();g(h);b(i);g(k);g(g);b(h);f(l);b(l);g(h);b(i);c(k);g(m);n();
+e(f);s();f(m);b(h);e(h);s();g(h);b(i);g(k);g(g);b(h);f(m);b(l);g(h);b(i);c(k);g(m);n();
+e(f);s();f(n);b(h);e(h);s();g(h);b(i);g(k);g(g);b(h);f(n);b(l);g(h);b(i);c(k);g(m);n();
+e(f);s();f(o);b(h);e(h);s();g(h);b(i);g(k);g(g);b(h);f(o);b(l);g(h);b(i);c(k);g(m);n();
+e(f);s();g(p);b(h);e(h);s();g(h);b(i);g(k);g(g);b(h);g(p);b(l);g(h);b(i);c(k);g(m);n();
+e(f);s();g(g);b(h);e(h);s();f(a);b(l);e(h);s();f(b);b(i);g(k);g(g);b(h);f(n);f(e);g(g);s();e(p);b(h);f(a);b(l);f(b);b(i);b(i);c(k);g(m);n();
+e(f);s();g(g);b(h);d(b);s();g(p);b(i);g(k);d(l);s();f(n);c(m);f(n);f(e);g(g);s();d(l);b(h);g(p);b(i);c(k);g(c);b(n);f(n);b(h);f(n);b(i);c(k);g(c);c(m);f(n);c(k);g(m);n();
+e(f);s();g(c);b(h);b(i);g(k);g(g);b(h);f(n);f(e);g(g);s();e(c);b(i);c(k);g(m);n();
+e(f);s();f(n);b(h);b(i);g(k);g(g);b(h);f(n);f(e);g(g);s();d(n);b(i);c(k);g(m);n();
+g(m);n();
+f(c);f(l);f(a);g(c);g(c);s();e(h);c(j);e(f);g(k);n();
+e(f);s();f(n);c(k);n();
+e(f);s();g(p);b(h);b(i);g(k);g(p);b(h);f(n);b(i);c(k);g(p);b(h);f(n);b(i);c(k);g(p);b(h);f(n);b(i);c(k);g(p);b(h);f(n);b(i);c(k);g(m);n();
+e(f);s();g(a);b(h);b(i);g(k);g(d);b(h);b(b);g(p);b(b);b(i);c(k);g(m);n();
+g(m);n();
+f(c);f(l);f(a);g(c);g(c);s();d(h);c(j);e(h);g(k);n();
+e(f);s();f(a);b(l);f(b);b(l);f(c);b(l);f(d);b(l);f(l);c(k);n();
+d(h);b(h);e(f);s();f(e);b(l);e(f);s();f(f);b(l);e(f);s();f(g);b(l);e(f);s();f(h);b(i);g(k);n();
+f(a);c(m);f(e);c(k);f(b);c(m);f(f);c(k);f(c);c(m);f(g);c(k);f(d);c(m);f(h);c(k);n();
+f(l);c(m);g(d);f(h);f(i);g(c);c(k);n();
+g(m);n();
+e(f);s();g(p);b(h);b(i);g(k);g(p);b(h);f(a);b(i);c(k);g(p);b(h);f(b);b(i);c(k);g(p);b(h);f(c);b(i);c(k);g(p);b(h);f(d);b(i);c(k);g(m);n();
+e(f);s();g(a);b(h);b(i);g(k);g(p);b(h);f(n);b(i);c(k);g(p);b(h);f(l);b(i);c(k);g(p);b(h);f(l);b(i);c(k);g(p);b(h);f(n);b(i);c(k);g(p);b(h);b(i);c(k);g(m);n();
+g(m);n();
+f(c);f(l);f(a);g(c);g(c);s();d(b);c(j);e(f);g(k);n();
+e(f);s();g(p);b(h);d(l);s();f(a);b(i);g(k);f(a);b(n);g(a);b(h);b(i);c(k);g(m);n();
+e(f);s();g(a);b(h);b(i);g(k);g(d);b(h);b(b);g(g);b(h);f(n);f(e);g(g);s();d(b);b(i);c(k);e(l);f(n);b(b);b(i);c(k);g(m);n();
+g(m);n();
+f(c);f(l);f(a);g(c);g(c);s();e(p);c(j);d(b);g(k);n();
+e(h);s();f(a);b(l);f(b);c(k);n();
+e(p);b(h);e(h);s();f(c);b(l);e(h);s();f(d);b(i);g(k);f(a);c(m);f(c);c(k);f(b);c(m);f(d);c(k);g(m);n();
+e(f);s();g(p);b(h);d(l);s();g(e);b(i);g(k);f(a);b(n);g(p);b(h);b(i);c(k);f(b);b(n);g(p);b(h);b(i);c(k);g(m);n();
+e(f);s();g(a);b(h);b(i);g(k);f(a);b(n);g(a);b(h);b(i);c(k);g(d);b(h);b(b);b(h);b(b);b(i);c(k);f(b);b(n);g(a);b(h);b(i);c(k);g(d);b(h);b(b);b(i);c(k);b(b);b(i);c(k);g(m);n();
+g(m);n();
+f(c);f(l);f(a);g(c);g(c);s();e(c);c(j);d(b);g(k);n();
+e(f);s();g(p);b(h);d(l);s();f(a);b(i);g(k);g(d);b(h);b(b);s();b(b);b(i);c(k);g(m);n();
+e(f);s();g(a);b(h);b(i);g(k);g(d);b(h);b(b);g(c);b(h);b(i);c(k);b(b);b(i);c(k);g(m);n();
+g(m);n();
+f(c);f(l);f(a);g(c);g(c);s();d(n);c(j);d(b);g(k);n();
+e(f);s();g(p);b(h);d(l);s();f(a);b(i);g(k);g(d);b(h);b(b);e(l);f(n);b(b);b(i);c(k);g(m);n();
+e(f);s();g(a);b(h);b(i);g(k);g(d);b(h);b(b);f(n);b(h);b(i);c(k);e(l);f(n);b(b);b(i);c(k);g(m);n();
+g(m);n();
+f(c);f(l);f(a);g(c);g(c);s();d(l);c(j);e(f);g(k);n();
+d(b);s();f(i);c(k);d(l);s();f(n);c(k);n();
+d(l);b(h);d(b);s();f(b);b(i);g(k);f(i);c(m);f(b);c(k);g(m);n();
+d(l);s();f(n);b(h);d(l);s();f(a);b(i);g(k);f(n);c(m);f(a);c(k);g(m);n();
+e(f);s();g(p);b(h);d(l);s();f(a);b(i);g(k);f(i);b(n);g(p);b(h);f(a);b(i);c(k);f(n);b(n);g(p);b(h);f(a);b(i);c(k);g(m);n();
+e(f);s();g(a);b(h);b(i);g(k);f(i);b(n);g(a);b(h);b(i);c(k);f(n);b(n);g(a);b(h);b(i);c(k);g(m);n();
+g(m);n();
+r.p(r);
+}
+V a(X x){w(a,x);}
+V b(X x){w(b,x);}
+V c(X x){w(c,x);}
+V d(X x){w(d,x);}
+V e(X x){w(e,x);}
+V f(X x){w(f,x);}
+V g(X x){w(g,x);}
+V h(X x){w(h,x);}
+V i(X x){w(i,x);}
+V j(X x){w(j,x);}
+V k(X x){w(k,x);}
+V l(X x){w(l,x);}
+V m(X x){w(m,x);}
+V n(X x){w(n,x);}
+V o(X x){w(o,x);}
+V p(X x){w(p,x);}
+V w(X a,X b){w(new P(a,b));}
+V w(B p){L n=new L(p);s.n(n);s=n;}
+V s(){w(new S);}
+V n(){w(new N);}
+}
+class X:V{
+V n;
+V p(){p(n);p(n);p(n);p(n);}
+V q(){t("p");}
+}
+class H:X{
+V a,b,c,d,l;
+H(V e,V f,V g,V h){
+a=e;b=f;c=g;d=h;
+l=this;
+}
+V p(){p(a);p(b);p(c);p(d);}
+V q(){p(n);p(l);p(l);p(n);p();}
+}
+class B:V{
+V p(L a){a.q();}
+V q(){t("w(new B);\n");}
+}
+class P:B{
+X a,b;
+P(X c,X d){a=c;b=d;}
+V p(L u){a.p();b.p();}
+V q(){a.q();t("(");b.q();t(");");}
+}
+class S:B{
+V p(L a){t(" ");}
+V q(){t("s();");}
+}
+class N:B{
+V p(L a){t("\n");}
+V q(){t("n();\n");}
+}
+class L:V{
+B i;L n;
+L(B b){i=b;}
+L n(L a){n=a;}
+V p(L a){i.p(a);n.p(a);}
+V q(){i.q();n.q();}
+}

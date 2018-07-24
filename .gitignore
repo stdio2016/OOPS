@@ -24,4 +24,5 @@ oops.vcxproj.*
 Report*.vspx
 src/Debug/*
 src/Release/*
+src/x64
 .vs/*

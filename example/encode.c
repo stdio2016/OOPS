@@ -8,7 +8,7 @@ int main(void)
     if (ch == '\n') puts("n();");
     else if (ch == ' ') printf("s();");
     else {
-      printf("w(%c,%c);", tb[ch>>4 & 15], tb[ch & 15]);
+      printf("%c(%c);", tb[ch>>4 & 15], tb[ch & 15]);
     }
   }
   return 0;
