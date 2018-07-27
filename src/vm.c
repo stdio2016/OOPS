@@ -176,7 +176,10 @@ union VM_Object *allocateObject(struct Class *cls, struct VM_State *vm) {
   return o;
 }
 
-#define STACKCHECK() if (sp >= vm->stackLimit) return VM_RunResult_StackOverflow
+#define STACKCHECK() if (sp >= vm->stackLimit) { \
+  vm->pc = pc; \
+  return VM_RunResult_StackOverflow; \
+}
 
 int startProgram(struct VM_State *vm) {
   struct Class *entryClass = getClass("main");
@@ -201,14 +204,17 @@ int startProgram(struct VM_State *vm) {
   }
   // initialize stack
   vm->heapUsed = vm->heap;
-  vm->stack->obj = allocateObject(entryClass, vm);
   vm->fp = vm->stack + 1;
+  vm->fp2 = vm->fp + entryMethod->localCount;
+  vm->sp = vm->fp2 + 3;
+  if (vm->sp >= vm->stackLimit) {
+    vm->sp = NULL;
+    return VM_RunResult_StackOverflow;
+  }
+  vm->stack->obj = allocateObject(entryClass, vm);
   for (i = 0; i < entryMethod->localCount; i++) {
     vm->fp[i].obj = NULL;
   }
-  vm->fp2 = vm->fp + entryMethod->localCount;
-  vm->sp = vm->fp2 + 3;
-  if (vm->sp >= vm->stackLimit) return VM_RunResult_StackOverflow;
   vm->sp[-3].sp = NULL;
   vm->sp[-2].sp = NULL;
   vm->sp[-1].ip = NULL;
@@ -415,9 +421,9 @@ int runByteCode(struct VM_State *vm) {
 }
 
 void stackTrace(struct VM_State *vm) {
-  if (vm->sp >= vm->stackLimit) return ;
   vm_stack_t *sp = vm->sp, *fp = vm->fp, *fp2 = vm->fp2;
   unsigned char *ip = vm->pc;
+  if (vm->sp == NULL) return;
   while (fp2 != NULL) {
     // fp to fp2, fp2+3 to sp
     vm_stack_t *p = fp2+2;
