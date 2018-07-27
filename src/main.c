@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
     vm.heapLimit = vm.heap + 16000;
     int r = startProgram(&vm);
     if (r != VM_RunResult_Finish) {
-      printf("\n");
+      fflush(stdout);
       switch (r) {
         case VM_RunResult_OOM:
           fprintf(stderr, "Out of memory\n"); break;
@@ -88,8 +88,12 @@ int main(int argc, char *argv[]) {
           fprintf(stderr, "Interrupt\n"); break;
         case VM_RunResult_InternalError:
           fprintf(stderr, "Internal error\n"); break;
+        case VM_RunResult_NoEntryPoint:
+          fprintf(stderr, "constructor main() not found\n"); break;
       }
-      stackTrace(&vm);
+      if (r != VM_RunResult_NoEntryPoint) {
+        stackTrace(&vm);
+      }
     }
     free(vm.stack);
     free(vm.heap);

@@ -178,7 +178,15 @@ varList:
 	;
 
 varDecl:
-	name { addLocalVar(currentType, $1); $$ = NULL; free($1); }
+	name {
+	    // fix uninitialized var error
+	    int id = addLocalVar(currentType, $1);
+	    struct Expr *var = createLocalVarExpr(id);
+	    var->type = currentType;
+	    struct Expr *as = createExpr(Op_ASSIGN, var, createExpr(Op_NULL, NULL, NULL));
+	    $$ = createStmt(Stmt_SIMPLE, as);
+	    free($1);
+	  }
 	| name '=' expression {
 	    int id = addLocalVar(currentType, $1);
 	    struct Expr *var = createLocalVarExpr(id);

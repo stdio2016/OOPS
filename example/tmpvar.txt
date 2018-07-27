@@ -1,0 +1,31 @@
+class main{
+  main yes;
+  main(){
+    yes = this;
+    {
+      main t = this;
+    }
+    {
+      good t;
+      // older version of OOPS does not initialize variable "t" to null
+      // so "t" will retain its old value, which is "this"
+      // and t.hehe() will call to wrong object
+      t.hehe();
+    }
+    yes.zzzzzzzzzzzzzzzz();
+  }
+  void zzzzzzzzzzzzzzzz() {
+    puts("Test \e[32mPASSED\n");
+  }
+  void shoult_not_execute_this() {
+    puts("Test \e[31mFAILED\n");
+    yes = null;
+  }
+}
+
+class good{
+  good next;
+  void hehe() {
+    puts("hehe\n");
+  }
+}

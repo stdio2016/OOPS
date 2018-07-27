@@ -194,12 +194,10 @@ int startProgram(struct VM_State *vm) {
     }
   }
   if (i == cons->size) {
-    printf("constructor main() not found\n");
-    return -1;
+    return VM_RunResult_NoEntryPoint;
   }
   if (entryMethod->flag & Method_BUILTIN) {
-    printf("constructor main() not found\n");
-    return -1;
+    return VM_RunResult_NoEntryPoint;
   }
   // initialize stack
   vm->heapUsed = vm->heap;
@@ -417,6 +415,7 @@ int runByteCode(struct VM_State *vm) {
 }
 
 void stackTrace(struct VM_State *vm) {
+  if (vm->sp >= vm->stackLimit) return ;
   vm_stack_t *sp = vm->sp, *fp = vm->fp, *fp2 = vm->fp2;
   unsigned char *ip = vm->pc;
   while (fp2 != NULL) {
