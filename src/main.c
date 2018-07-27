@@ -90,10 +90,10 @@ int main(int argc, char *argv[]) {
           fprintf(stderr, "Internal error\n"); break;
         case VM_RunResult_NoEntryPoint:
           fprintf(stderr, "constructor main() not found\n"); break;
+        case VM_RunResult_NoMainClass:
+          fprintf(stderr, "entry class \"main\" not found\n"); break;
       }
-      if (r != VM_RunResult_NoEntryPoint) {
-        stackTrace(&vm);
-      }
+      stackTrace(&vm);
     }
     free(vm.stack);
     free(vm.heap);

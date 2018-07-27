@@ -26,7 +26,8 @@ enum VM_RunResult {
   VM_RunResult_StackOverflow,
   VM_RunResult_Interrupt,
   VM_RunResult_InternalError,
-  VM_RunResult_NoEntryPoint
+  VM_RunResult_NoEntryPoint,
+  VM_RunResult_NoMainClass
 };
 
 void showBytecode(unsigned char *code);

@@ -183,9 +183,9 @@ union VM_Object *allocateObject(struct Class *cls, struct VM_State *vm) {
 
 int startProgram(struct VM_State *vm) {
   struct Class *entryClass = getClass("main");
+  vm->sp = NULL;
   if (entryClass == NULL || !entryClass->defined) {
-    printf("entry class \"main\" not found\n");
-    return -1;
+    return VM_RunResult_NoMainClass;
   }
   struct ArrayList *cons = MyHash_get(&entryClass->methods, "<init>");
   struct Method *entryMethod;
