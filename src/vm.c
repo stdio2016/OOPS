@@ -1,8 +1,11 @@
+#include <signal.h>
 #include <stdio.h>
 #include <string.h>
 #include "vm.h"
 #include "class.h"
 #include "ArrayList.h"
+
+static volatile int interrupted = 0;
 
 void showBytecode(unsigned char *code) {
   while (*code != Instr_RETURN) {
@@ -215,7 +218,13 @@ int startProgram(struct VM_State *vm) {
   return runByteCode(vm);
 }
 
+static void intr(int sig) {
+  interrupted = 1;
+}
+
 int runByteCode(struct VM_State *vm) {
+  interrupted = 0;
+  signal(SIGINT, intr);
   struct Class *VoidClass = getVoidClass();
   unsigned char *pc = vm->pc;
   vm_stack_t *stack = vm->stack;
@@ -227,7 +236,7 @@ int runByteCode(struct VM_State *vm) {
   int arity;
   int i;
   vm_stack_t *tmp = vm->fp;
-  while (1) {
+  while (!interrupted) {
     //printf("%02X sp %d fp %d\n", *pc, sp - stack, fp - stack);
     switch (*pc) {
       case Instr_NOP:
@@ -400,5 +409,44 @@ int runByteCode(struct VM_State *vm) {
         return VM_RunResult_InternalError;
     }
     pc++;
+  }
+  vm->sp = sp;
+  vm->fp = fp;
+  vm->pc = pc;
+  return VM_RunResult_Interrupt;
+}
+
+void stackTrace(struct VM_State *vm) {
+  vm_stack_t *sp = vm->sp, *fp = vm->fp, *fp2 = vm->fp2;
+  unsigned char *ip = vm->pc;
+  while (fp2 != NULL) {
+    // fp to fp2, fp2+3 to sp
+    vm_stack_t *p = fp2+2;
+    vm_object *obj = fp[-1].obj;
+    int clsid = obj[-1].classId;
+    if (clsid & VM_STRING_LIT) clsid = 0;
+    else clsid = clsid & VM_CLASS_MASK;
+    struct Class *cls = classTable[clsid];
+    int i;
+    // find possible method
+    struct Method *maybe = NULL;
+    for (i = 0; i < cls->methodCount; i++) {
+      struct Method *meth = cls->methodTable[i];
+      if (!(meth->flag & Method_BUILTIN) && meth->bytecode <= ip) {
+        if (maybe == NULL || meth->bytecode > maybe->bytecode) {
+          maybe = meth;
+        }
+      }
+    }
+    if (maybe == NULL) {
+      printf("at %s.<unknown>\n", cls->name);
+    }
+    else {
+      printf("at %s.%s + %zd\n", cls->name, maybe->name, ip - maybe->bytecode);
+    }
+    ip = p->ip;
+    sp = fp;
+    fp = fp2[1].sp;
+    fp2 = fp2[0].sp;
   }
 }

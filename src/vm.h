@@ -67,4 +67,5 @@ typedef union VM_Object vm_object;
 
 int startProgram(struct VM_State *state);
 int runByteCode(struct VM_State *state);
+void stackTrace(struct VM_State *vm);
 #endif

@@ -89,6 +89,7 @@ int main(int argc, char *argv[]) {
         case VM_RunResult_InternalError:
           fprintf(stderr, "Internal error\n"); break;
       }
+      stackTrace(&vm);
     }
     free(vm.stack);
     free(vm.heap);
