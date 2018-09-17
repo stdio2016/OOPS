@@ -115,6 +115,7 @@ void addField(ClassType cls, ClassType type, const char *name) {
     f->type = type;
     f->refcount = 1;
     f->thisClass = cls;
+    f->id = cls->fields._size;
     MyHash_set(&cls->fields, f->name, f);
   }
   else {
@@ -312,8 +313,8 @@ static void inheritFields(struct Class *cls) {
   MyHash_iterate(&cls->fields, &it);
   for (i = base->fieldCount; i < size; i++) {
     struct Field *f = it.it->value;
-    cls->fieldTable[i] = f;
-    f->id = i;
+    f->id += base->fieldCount;
+    cls->fieldTable[f->id] = f;
     MyHash_next(&it);
   }
   // add inherited fields
