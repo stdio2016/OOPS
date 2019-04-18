@@ -1,0 +1,471 @@
+// brainfuck interpreter in OOPS, to proof that this language is Turing complete
+// Warning! I have not implemented tail call so this program might cause stack overflow
+class fun {
+  fun apply(fun x) {}
+}
+
+class one:fun {
+  fun apply(fun x) {
+    x.apply(null);
+  }
+}
+
+class bool:fun {
+  one t, f;
+  one y;
+  bool() {
+    y = new one;
+  }
+  fun apply(fun x) {
+    t = f;
+  }
+  one and(one a, one b) {
+    t = null; f = b;
+    a.apply(this);
+    return t;
+  }
+  one or(one a, one b) {
+    t = b; f = y;
+    a.apply(this);
+    return t;
+  }
+  one not(one a) {
+    t = y; f = null;
+    a.apply(this);
+    return t;
+  }
+}
+
+class pair:fun {
+  fun a,b;
+  pair(fun x, fun y) {
+    a = x;
+    b = y;
+  }
+  fun apply(fun x) {
+    fun t = a; a = b; b = t;
+  }
+}
+
+class tree:pair {
+  tree parent;
+  one bit;
+  tree(tree l, tree r, one c) {
+    super(l, r);
+    bit = c;
+  }
+  void setParent(tree p) {
+    parent = p;
+  }
+  void setBit(one b) { bit = b; }
+  tree getParent() { parent; }
+  tree left() { tree l=a; }
+  tree right() { tree r=b; }
+  tree clone() {
+    tree l=a, r=b;
+    return new tree(l.clone(), r.clone(), bit);
+  }
+  void print() {
+    parent.print();
+    putchar(bit);
+  }
+  void fixParent(tree pa) {
+    parent = pa;
+    left().fixParent(this);
+    right().fixParent(this);
+  }
+  void setNext(stack s) {
+    left().setNext(s);
+    right().setNext(s);
+  }
+}
+
+class root:tree {
+  void print() {}
+}
+
+class number:tree {
+  number prev, next;
+  number(one c) {
+    super(null, null, c);
+  }
+  number clone() {
+    return new number(bit);
+  }
+  number decr() { prev; }
+  number incr() { next; }
+  void setNext(stack s) {
+    prev = s.get();
+    prev.setNext(this);
+    s.set(this);
+  }
+  void setNext(number n) {
+    next = n;
+  }
+  fun apply(fun x) {
+    
+  }
+}
+
+class numberZero:number {
+  fun apply(fun x) {
+    x.apply(null);
+  }
+}
+
+class stack {
+  number cur;
+  stack nxt;
+  stack(number n, stack x) {
+    cur = n;
+    nxt = x;
+  }
+  number get() {
+    return cur;
+  }
+  stack set(number n) {
+    cur = n;
+    return this;
+  }
+  void setNext(stack x) {
+    nxt = x;
+  }
+  stack pop() {
+    return nxt;
+  }
+  stack top() {
+    return this;
+  }
+}
+
+class stackEnd: stack {
+  stackEnd(number zero) {
+    super(zero, this);
+  }
+  stack top() {
+    return new stack(cur, this);
+  }
+  stack set(number n) {
+    return new stack(n, this);
+  }
+}
+
+class tape {
+  tree n;
+  stack left, right;
+  tape() {
+    one i = new one;
+    number zero = new numberZero(null);
+    // 1
+    n = new tree(zero, new number(i));
+    // 2
+    tree t = n.clone();
+    t.setBit(i);
+    n = new tree(n, t);
+    // 3
+    t = n.clone();
+    t.setBit(i);
+    n = new tree(n, t);
+    // 4
+    t = n.clone();
+    t.setBit(i);
+    n = new tree(n, t);
+    // 5
+    t = n.clone();
+    t.setBit(i);
+    n = new tree(n, t);
+    // 6
+    t = n.clone();
+    t.setBit(i);
+    n = new tree(n, t);
+    // 7
+    t = n.clone();
+    t.setBit(i);
+    n = new tree(n, t);
+    // 8
+    t = n.clone();
+    t.setBit(i);
+    n = new root(n, t);
+    n.fixParent(null);
+    number minus1 = n.right().right().right().right().right().right().right().right();
+    n.setNext(new stack(minus1, null));
+
+    left = new stackEnd(zero);
+    right = new stack(zero, new stackEnd(zero));
+  }
+  void moveLeft() {
+    stack t = left.top();
+    left = left.pop();
+    t.setNext(right);
+    right = t;
+  }
+  void moveRight() {
+    stack t = right.top();
+    right = right.pop();
+    t.setNext(left);
+    left = t;
+  }
+  number get() {
+    return right.get();
+  }
+  void set(number n) {
+    right = right.set(n);
+  }
+  tree n() { n; }
+}
+
+class opcode: fun {
+  opcode nxt;
+  void setNext(opcode n) {
+    nxt = n;
+  }
+  void action(tape t) { }
+  void run(tape t) {
+    action(t);
+    nxt.run(t);
+  }
+  void addTo(sequence seq) {
+    seq.add(this);
+  }
+}
+
+class sequence: opcode {
+  opcode last;
+  sequence() {
+    nxt = last = new opcode();
+  }
+  void add(opcode n) {
+    last.setNext(n);
+    last = n;
+  }
+}
+
+class plus: opcode {
+  void action(tape t) {
+    t.set(t.get().incr());
+  }
+}
+
+class minus: opcode {
+  void action(tape t) {
+    t.set(t.get().decr());
+  }
+}
+
+class left: opcode {
+  void action(tape t) {
+    t.moveLeft();
+  }
+}
+
+class right: opcode {
+  void action(tape t) {
+    t.moveRight();
+  }
+}
+
+class input: opcode {
+  void action(tape t) {
+    tree n = t.n(), u;
+    one y = new one;
+    one f;
+    f = y.getchar(); f.apply(n);
+    u = n.apply(null); n.apply(null); f.apply(n); n = u;
+    f = y.getchar(); f.apply(n);
+    u = n.apply(null); n.apply(null); f.apply(n); n = u;
+    f = y.getchar(); f.apply(n);
+    u = n.apply(null); n.apply(null); f.apply(n); n = u;
+    f = y.getchar(); f.apply(n);
+    u = n.apply(null); n.apply(null); f.apply(n); n = u;
+    f = y.getchar(); f.apply(n);
+    u = n.apply(null); n.apply(null); f.apply(n); n = u;
+    f = y.getchar(); f.apply(n);
+    u = n.apply(null); n.apply(null); f.apply(n); n = u;
+    f = y.getchar(); f.apply(n);
+    u = n.apply(null); n.apply(null); f.apply(n); n = u;
+    f = y.getchar(); f.apply(n);
+    u = n.apply(null); n.apply(null); f.apply(n); n = u;
+    number num = n;
+    t.set(num);
+  }
+}
+
+class output: opcode {
+  void action(tape t) {
+    t.get().print();
+  }
+}
+
+class loop: sequence {
+  opcode to, to2;
+  void setup() {
+    last = nxt;
+    nxt = null;
+  }
+  void run(tape t) {
+    to = last;
+    to2 = this;
+    t.get().apply(this);
+    to.run(t);
+    to2.run(t);
+  }
+  fun apply(fun x) {
+    to = null;
+    to2 = nxt;
+  }
+}
+
+class main: fun {
+  one y;
+  bool bo;
+  one d7,d6,d5,d4,d3,d2,d1,d0;
+  sequence code;
+  void input() {
+    d7 = y.getchar();
+    d6 = y.getchar();
+    d5 = y.getchar();
+    d4 = y.getchar();
+    d3 = y.getchar();
+    d2 = y.getchar();
+    d1 = y.getchar();
+    d0 = y.getchar();
+  }
+  main() {
+    y = new one;
+    bo = new bool;
+    code = new sequence;
+    parse(code);
+    tape t = new tape;
+    code.run(t);
+  }
+  void parse(sequence seq) {
+    input();
+    one x;
+    pair t;
+    opcode c;
+
+    // test +
+    x = bo.not(d7);
+    x = bo.and(x, bo.not(d6));
+    x = bo.and(x, d5);
+    x = bo.and(x, bo.not(d4));
+    x = bo.and(x, d3);
+    x = bo.and(x, bo.not(d2));
+    x = bo.and(x, d1);
+    x = bo.and(x, d0);
+    t = new pair(null, new plus());
+    x.apply(t);
+    c = t.apply(null);
+    c.addTo(seq);
+
+    // test -
+    x = bo.not(d7);
+    x = bo.and(x, bo.not(d6));
+    x = bo.and(x, d5);
+    x = bo.and(x, bo.not(d4));
+    x = bo.and(x, d3);
+    x = bo.and(x, d2);
+    x = bo.and(x, bo.not(d1));
+    x = bo.and(x, d0);
+    t = new pair(null, new minus());
+    x.apply(t);
+    c = t.apply(null);
+    c.addTo(seq);
+
+    // test ,
+    x = bo.not(d7);
+    x = bo.and(x, bo.not(d6));
+    x = bo.and(x, d5);
+    x = bo.and(x, bo.not(d4));
+    x = bo.and(x, d3);
+    x = bo.and(x, d2);
+    x = bo.and(x, bo.not(d1));
+    x = bo.and(x, bo.not(d0));
+    t = new pair(null, new input());
+    x.apply(t);
+    c = t.apply(null);
+    c.addTo(seq);
+
+    // test .
+    x = bo.not(d7);
+    x = bo.and(x, bo.not(d6));
+    x = bo.and(x, d5);
+    x = bo.and(x, bo.not(d4));
+    x = bo.and(x, d3);
+    x = bo.and(x, d2);
+    x = bo.and(x, d1);
+    x = bo.and(x, bo.not(d0));
+    t = new pair(null, new output());
+    x.apply(t);
+    c = t.apply(null);
+    c.addTo(seq);
+
+    // test <
+    x = bo.not(d7);
+    x = bo.and(x, bo.not(d6));
+    x = bo.and(x, d5);
+    x = bo.and(x, d4);
+    x = bo.and(x, d3);
+    x = bo.and(x, d2);
+    x = bo.and(x, bo.not(d1));
+    x = bo.and(x, bo.not(d0));
+    t = new pair(null, new left());
+    x.apply(t);
+    c = t.apply(null);
+    c.addTo(seq);
+
+    // test >
+    x = bo.not(d7);
+    x = bo.and(x, bo.not(d6));
+    x = bo.and(x, d5);
+    x = bo.and(x, d4);
+    x = bo.and(x, d3);
+    x = bo.and(x, d2);
+    x = bo.and(x, d1);
+    x = bo.and(x, bo.not(d0));
+    t = new pair(null, new right());
+    x.apply(t);
+    c = t.apply(null);
+    c.addTo(seq);
+
+    // test [
+    x = bo.not(d7);
+    x = bo.and(x, d6);
+    x = bo.and(x, bo.not(d5));
+    x = bo.and(x, d4);
+    x = bo.and(x, d3);
+    x = bo.and(x, bo.not(d2));
+    x = bo.and(x, d1);
+    x = bo.and(x, d0);
+    t = new pair(null, this);
+    x.apply(t);
+    main m = t.apply(null);
+    main m2 = t.apply(null);
+    m.loop(seq);
+    m2.notloop(seq);
+  }
+
+  void loop(sequence seq) {
+    loop lo = new loop();
+    parse(lo);
+    lo.setup();
+    seq.add(lo);
+    parse(seq);
+  }
+
+  void notloop(sequence seq) {
+    // test ]
+    one x = bo.not(d7);
+    x = bo.and(x, d6);
+    x = bo.and(x, bo.not(d5));
+    x = bo.and(x, d4);
+    x = bo.and(x, d3);
+    x = bo.and(x, d2);
+    x = bo.and(x, bo.not(d1));
+    x = bo.and(x, d0);
+    pair t = new pair(this, null);
+    x.apply(t);
+    main m = t.apply(null);
+    m.parse(seq);
+  }
+}
