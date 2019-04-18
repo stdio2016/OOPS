@@ -73,7 +73,7 @@ void printStruct(vm_object *obj, vm_object *heap) {
     else if (next[-1].classId & VM_STRING_LIT) {
       // string object
       extern struct SizedString **strLitTable;
-      struct SizedString *str = strLitTable[obj[-1].classId & ~VM_STRING_LIT];
+      struct SizedString *str = strLitTable[next[-1].classId & VM_CLASS_MASK];
       putchar('"');
       fwrite(str->str, 1, str->len, stdout);
       putchar('"');
