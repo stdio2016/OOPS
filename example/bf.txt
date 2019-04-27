@@ -285,7 +285,11 @@ class input: opcode {
     u = n.apply(null); n.apply(null); f.apply(n); n = u;
     f = y.getchar(); f.apply(n);
     u = n.apply(null); n.apply(null); f.apply(n); n = u;
-    number num = n;
+    f = y.feof();
+    pair eof = new pair(n,
+      t.n().right().right().right().right().right().right().right().right());
+    f.apply(eof);
+    number num = eof.apply(n);
     t.set(num);
   }
 }

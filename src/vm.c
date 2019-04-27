@@ -228,7 +228,15 @@ static void intr(int sig) {
 
 int runByteCode(struct VM_State *vm) {
   interrupted = 0;
+#if _POSIX_C_SOURCE >= 199309L
+  struct sigaction sa;
+  memset(&sa, 0, sizeof sa);
+  sa.sa_handler = intr;
+  sa.sa_flags = 0;
+  sigaction(SIGINT, &sa, NULL);
+#else
   signal(SIGINT, intr);
+#endif
   struct Class *VoidClass = getVoidClass();
   unsigned char *pc = vm->pc;
   vm_stack_t *stack = vm->stack;
